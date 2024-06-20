@@ -13,36 +13,47 @@ struct SleepBarView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let totalTime = wakeTime.timeIntervalSince(sleepTime)
-            let totalMinutes = 24 * 60 // 24 hours in minutes
-            let startMinutes = Calendar.current.component(.hour, from: sleepTime) * 60 + Calendar.current.component(.minute, from: sleepTime)
-            let endMinutes = Calendar.current.component(.hour, from: wakeTime) * 60 + Calendar.current.component(.minute, from: wakeTime)
+            // Define the start and end times for the day
+            let calendar = Calendar.current
+            let startTime = calendar.date(bySettingHour: 21, minute: 0, second: 0, of: sleepTime)!
+            let endTime = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: sleepTime.addingTimeInterval(86400))!
+            let totalTime = endTime.timeIntervalSince(startTime)
             
-            let startRatio = Double(startMinutes) / Double(totalMinutes)
-            let durationRatio = totalTime / Double(totalMinutes * 60)
+            // Adjust sleep and wake times to be within this interval
+            let adjustedSleepTime = sleepTime < startTime ? sleepTime.addingTimeInterval(86400) : sleepTime
+            let adjustedWakeTime = wakeTime < startTime ? wakeTime.addingTimeInterval(86400) : wakeTime
             
-            VStack {
+            let sleepDuration = adjustedWakeTime.timeIntervalSince(adjustedSleepTime)
+            let sleepStartRatio = adjustedSleepTime.timeIntervalSince(startTime) / totalTime
+            let sleepDurationRatio = sleepDuration / totalTime
+            
+            VStack(spacing: 2) { // Adjusted spacing
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
+                        .frame(height: geometry.size.height * 0.5) // Adjusted height
                     Rectangle()
                         .fill(Color.blue)
-                        .frame(width: geometry.size.width * CGFloat(durationRatio), height: geometry.size.height * 0.8)
-                        .offset(x: geometry.size.width * CGFloat(startRatio))
+                        .frame(width: geometry.size.width * CGFloat(sleepDurationRatio), height: geometry.size.height * 0.5)
+                        .offset(x: geometry.size.width * CGFloat(sleepStartRatio))
                 }
                 .cornerRadius(4)
                 
-                HStack {
-                    ForEach(0..<25) { hour in
-                        Text("\(hour)")
-                            .font(.caption)
-                            .frame(width: geometry.size.width / 24, alignment: .center)
+                HStack(spacing: 0) {
+                    ForEach(0..<18) { hour in
+                        let displayHour = (21 + hour) % 24
+                        Text("\(displayHour)")
+                            .font(.caption2) // Adjusted font size
+                            .frame(width: geometry.size.width / 17, alignment: .center) // 17 hours from 9 PM to 2 PM
                     }
                 }
             }
         }
-        .frame(height: 40)
+        .frame(height: 30) // Adjusted frame height
     }
 }
+
+
+
 
 
