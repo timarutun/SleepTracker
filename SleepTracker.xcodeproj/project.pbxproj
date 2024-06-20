@@ -8,21 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		39599EF12C23D8570050DC0E /* SleepTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */; };
-		39599EF32C23D8570050DC0E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF22C23D8570050DC0E /* ContentView.swift */; };
+		39599EF32C23D8570050DC0E /* SleepTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF22C23D8570050DC0E /* SleepTrackerView.swift */; };
 		39599EF52C23D8590050DC0E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 39599EF42C23D8590050DC0E /* Assets.xcassets */; };
 		39599EF82C23D8590050DC0E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 39599EF72C23D8590050DC0E /* Preview Assets.xcassets */; };
 		39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF92C23D8590050DC0E /* Persistence.swift */; };
-		39599EFD2C23D8590050DC0E /* SleepTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 39599EFB2C23D8590050DC0E /* SleepTracker.xcdatamodeld */; };
+		39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 39599EFB2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld */; };
+		39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599F052C23DC8D0050DC0E /* SleepBarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		39599EED2C23D8570050DC0E /* SleepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTrackerApp.swift; sourceTree = "<group>"; };
-		39599EF22C23D8570050DC0E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		39599EF22C23D8570050DC0E /* SleepTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTrackerView.swift; sourceTree = "<group>"; };
 		39599EF42C23D8590050DC0E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		39599EF72C23D8590050DC0E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		39599EF92C23D8590050DC0E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		39599EFC2C23D8590050DC0E /* SleepTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SleepTracker.xcdatamodel; sourceTree = "<group>"; };
+		39599F052C23DC8D0050DC0E /* SleepBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,10 +58,11 @@
 			isa = PBXGroup;
 			children = (
 				39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */,
-				39599EF22C23D8570050DC0E /* ContentView.swift */,
+				39599EF22C23D8570050DC0E /* SleepTrackerView.swift */,
 				39599EF42C23D8590050DC0E /* Assets.xcassets */,
 				39599EF92C23D8590050DC0E /* Persistence.swift */,
-				39599EFB2C23D8590050DC0E /* SleepTracker.xcdatamodeld */,
+				39599F052C23DC8D0050DC0E /* SleepBarView.swift */,
+				39599EFB2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld */,
 				39599EF62C23D8590050DC0E /* Preview Content */,
 			);
 			path = SleepTracker;
@@ -143,9 +146,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */,
 				39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */,
-				39599EF32C23D8570050DC0E /* ContentView.swift in Sources */,
-				39599EFD2C23D8590050DC0E /* SleepTracker.xcdatamodeld in Sources */,
+				39599EF32C23D8570050DC0E /* SleepTrackerView.swift in Sources */,
+				39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */,
 				39599EF12C23D8570050DC0E /* SleepTrackerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,13 +358,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		39599EFB2C23D8590050DC0E /* SleepTracker.xcdatamodeld */ = {
+		39599EFB2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				39599EFC2C23D8590050DC0E /* SleepTracker.xcdatamodel */,
 			);
 			currentVersion = 39599EFC2C23D8590050DC0E /* SleepTracker.xcdatamodel */;
-			path = SleepTracker.xcdatamodeld;
+			path = SleepTrackerModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
