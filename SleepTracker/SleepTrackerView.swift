@@ -43,7 +43,7 @@ struct SleepTrackerView: View {
                         List {
                             ForEach(sleepRecords) { record in
                                 VStack(alignment: .leading) {
-                                    Text("Date: \(record.date!, formatter: dateFormatter)")
+                                    Text(formattedDate(record.date!))
                                     SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
                                     Text("Quality: \(record.quality)")
                                     Text("Notes: \(record.notes ?? "")")
@@ -56,6 +56,12 @@ struct SleepTrackerView: View {
             }
             .navigationBarTitle("Sleep Tracker")
         }
+    }
+    
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM"
+        return formatter.string(from: date)
     }
     
     private func addSleepRecord() {
@@ -89,12 +95,6 @@ struct SleepTrackerView: View {
         }
     }
 }
-
-private let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    return formatter
-}()
 
 struct SleepTrackerView_Previews: PreviewProvider {
     static var previews: some View {
