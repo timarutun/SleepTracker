@@ -13,13 +13,11 @@ struct SleepBarView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            // Define the start and end times for the day
             let calendar = Calendar.current
             let startTime = calendar.date(bySettingHour: 21, minute: 0, second: 0, of: sleepTime)!
             let endTime = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: sleepTime.addingTimeInterval(86400))!
             let totalTime = endTime.timeIntervalSince(startTime)
             
-            // Adjust sleep and wake times to be within this interval
             let adjustedSleepTime = sleepTime < startTime ? sleepTime.addingTimeInterval(86400) : sleepTime
             let adjustedWakeTime = wakeTime < startTime ? wakeTime.addingTimeInterval(86400) : wakeTime
             
@@ -27,11 +25,11 @@ struct SleepBarView: View {
             let sleepStartRatio = adjustedSleepTime.timeIntervalSince(startTime) / totalTime
             let sleepDurationRatio = sleepDuration / totalTime
             
-            VStack(spacing: 2) { // Adjusted spacing
+            VStack(spacing: 2) {
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                        .frame(height: geometry.size.height * 0.5) // Adjusted height
+                        .frame(height: geometry.size.height * 0.5)
                     Rectangle()
                         .fill(Color.blue)
                         .frame(width: geometry.size.width * CGFloat(sleepDurationRatio), height: geometry.size.height * 0.5)
@@ -43,13 +41,13 @@ struct SleepBarView: View {
                     ForEach(0..<18) { hour in
                         let displayHour = (21 + hour) % 24
                         Text("\(displayHour)")
-                            .font(.caption2) // Adjusted font size
-                            .frame(width: geometry.size.width / 17, alignment: .center) // 17 hours from 9 PM to 2 PM
+                            .font(.caption2)
+                            .frame(width: geometry.size.width / 17, alignment: .center)
                     }
                 }
             }
         }
-        .frame(height: 30) // Adjusted frame height
+        .frame(height: 30) 
     }
 }
 

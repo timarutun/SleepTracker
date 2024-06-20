@@ -15,6 +15,7 @@ struct SleepTrackerView: View {
         animation: .default)
     private var sleepRecords: FetchedResults<SleepRecord>
     
+    @State private var selectedDate = Date()
     @State private var sleepTime = Date()
     @State private var wakeTime = Date()
     @State private var quality: Double = 3
@@ -25,6 +26,7 @@ struct SleepTrackerView: View {
             VStack {
                 Form {
                     Section(header: Text("Add New Sleep Record")) {
+                        DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
                         DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
                         DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
                         HStack {
@@ -59,7 +61,7 @@ struct SleepTrackerView: View {
     private func addSleepRecord() {
         withAnimation {
             let newRecord = SleepRecord(context: viewContext)
-            newRecord.date = Date()
+            newRecord.date = selectedDate
             newRecord.sleepTime = sleepTime
             newRecord.wakeTime = wakeTime
             newRecord.quality = Int16(quality)
@@ -94,17 +96,12 @@ private let dateFormatter: DateFormatter = {
     return formatter
 }()
 
-private let timeFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.timeStyle = .short
-    return formatter
-}()
-
 struct SleepTrackerView_Previews: PreviewProvider {
     static var previews: some View {
         SleepTrackerView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
+
 
 #Preview {
     SleepTrackerView()
