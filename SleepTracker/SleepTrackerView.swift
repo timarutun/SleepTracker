@@ -20,7 +20,7 @@ struct SleepTrackerView: View {
     @State private var wakeTime = Date()
     @State private var quality: Double = 3
     @State private var notes: String = ""
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -43,10 +43,11 @@ struct SleepTrackerView: View {
                         List {
                             ForEach(sleepRecords) { record in
                                 VStack(alignment: .leading) {
-                                    Text(formattedDate(record.date!))
+                                    Text("Date: \(formattedDate(record.date!))")
                                     SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
                                     Text("Quality: \(record.quality)")
                                     Text("Notes: \(record.notes ?? "")")
+                                    Text("Sleep Duration: \(sleepDuration(record))") // Display sleep duration
                                 }
                             }
                             .onDelete(perform: deleteSleepRecords)
@@ -62,6 +63,23 @@ struct SleepTrackerView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM"
         return formatter.string(from: date)
+    }
+
+    private func sleepDuration(_ record: SleepRecord) -> String {
+        let calendar = Calendar.current
+        let startTime = calendar.date(bySettingHour: 23, minute: 0, second: 0, of: record.sleepTime!)!
+        let endTime = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: record.wakeTime!.addingTimeInterval(86400))!
+        
+        let adjustedSleepTime = record.sleepTime! < startTime ? record.sleepTime!.addingTimeInterval(86400) : record.sleepTime!
+        let adjustedWakeTime = record.wakeTime! < startTime ? record.wakeTime!.addingTimeInterval(86400) : record.wakeTime!
+        
+        let sleepDuration = adjustedWakeTime.timeIntervalSince(adjustedSleepTime)
+        
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .short
+        
+        return formatter.string(from: sleepDuration) ?? "0h 0m"
     }
     
     private func addSleepRecord() {

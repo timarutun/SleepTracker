@@ -47,7 +47,7 @@ struct SleepBarView: View {
                 }
             }
         }
-        .frame(height: 30) 
+        .frame(height: 40)
     }
 }
 
