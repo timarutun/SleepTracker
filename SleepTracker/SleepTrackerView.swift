@@ -18,8 +18,11 @@ struct SleepTrackerView: View {
     @State private var selectedDate = Date()
     @State private var sleepTime = Date()
     @State private var wakeTime = Date()
-    @State private var quality: Double = 3
+    @State private var quality: Int = 3
     @State private var notes: String = ""
+    @State private var showingDetailsFor: SleepRecord? = nil
+    
+    private let qualityEmojis = ["😡", "😓", "🙂", "😌", "😴"]
 
     var body: some View {
         NavigationView {
@@ -29,10 +32,22 @@ struct SleepTrackerView: View {
                         DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
                         DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
                         DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
+                        
                         HStack {
                             Text("Quality")
-                            Slider(value: $quality, in: 1...5, step: 1)
+                            Spacer()
+                            ForEach(0..<5) { i in
+                                Button(action: {
+                                    quality = i + 1
+                                }) {
+                                    Text(qualityEmojis[i])
+                                        .font(.largeTitle)
+                                        .cornerRadius(10)
+                                        .foregroundColor(.white)
+                                }
+                            }
                         }
+                        
                         TextField("Notes", text: $notes)
                         Button(action: addSleepRecord) {
                             Text("Save Record")
@@ -43,12 +58,23 @@ struct SleepTrackerView: View {
                         List {
                             ForEach(sleepRecords) { record in
                                 VStack(alignment: .leading) {
-                                    Text("Date: \(formattedDate(record.date!))")
-                                    SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
-                                    Text("Quality: \(record.quality)")
-                                    Text("Notes: \(record.notes ?? "")")
-                                    Text("Sleep Duration: \(sleepDuration(record))") // Display sleep duration
+                                    Button(action: {
+                                        if showingDetailsFor == record {
+                                            showingDetailsFor = nil
+                                        } else {
+                                            showingDetailsFor = record
+                                        }
+                                    }) {
+                                        Text(formattedDate(record.date!))
+                                        SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
+                                    }
+                                    if showingDetailsFor == record {
+                                        Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
+                                        Text("Notes: \(record.notes ?? "")")
+                                        Text("Sleep Duration: \(sleepDuration(record))")
+                                    }
                                 }
+                                .foregroundStyle(Color(.label))
                             }
                             .onDelete(perform: deleteSleepRecords)
                         }
@@ -119,6 +145,7 @@ struct SleepTrackerView_Previews: PreviewProvider {
         SleepTrackerView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
+
 
 
 #Preview {
