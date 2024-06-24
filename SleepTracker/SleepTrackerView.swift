@@ -65,13 +65,16 @@ struct SleepTrackerView: View {
                                             showingDetailsFor = record
                                         }
                                     }) {
-                                        Text(formattedDate(record.date!))
+                                        HStack {
+                                            Text(formattedDate(record.date!))
+                                            Spacer()
+                                            Text(sleepDuration(record))
+                                        } .padding(.horizontal)
                                         SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
                                     }
                                     if showingDetailsFor == record {
                                         Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
                                         Text("Notes: \(record.notes ?? "")")
-                                        Text("Sleep Duration: \(sleepDuration(record))")
                                     }
                                 }
                                 .foregroundStyle(Color(.label))
@@ -94,7 +97,7 @@ struct SleepTrackerView: View {
     private func sleepDuration(_ record: SleepRecord) -> String {
         let calendar = Calendar.current
         let startTime = calendar.date(bySettingHour: 23, minute: 0, second: 0, of: record.sleepTime!)!
-        let endTime = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: record.wakeTime!.addingTimeInterval(86400))!
+        _ = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: record.wakeTime!.addingTimeInterval(86400))!
         
         let adjustedSleepTime = record.sleepTime! < startTime ? record.sleepTime!.addingTimeInterval(86400) : record.sleepTime!
         let adjustedWakeTime = record.wakeTime! < startTime ? record.wakeTime!.addingTimeInterval(86400) : record.wakeTime!
@@ -145,7 +148,6 @@ struct SleepTrackerView_Previews: PreviewProvider {
         SleepTrackerView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
-
 
 
 #Preview {
