@@ -4,6 +4,7 @@
 //
 //  Created by Timur on 6/19/24.
 //
+//["😡", "😠", "🙂", "😀", "😍"]
 
 import SwiftUI
 import CoreData
@@ -21,70 +22,93 @@ struct SleepTrackerView: View {
     @State private var quality: Int = 3
     @State private var notes: String = ""
     @State private var showingDetailsFor: SleepRecord? = nil
+    @State private var isShowingAddNewRecord = false
     
-    private let qualityEmojis = ["😡", "😓", "🙂", "😌", "😴"]
-
+    private let qualityEmojis = ["😡", "😠", "🙂", "😀", "😍"]
+    
     var body: some View {
         NavigationView {
             VStack {
-                Form {
-                    Section(header: Text("Add New Sleep Record")) {
-                        DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
-                        DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
-                        DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
-                        
-                        HStack {
-                            Text("Quality")
-                            Spacer()
-                            ForEach(0..<5) { i in
-                                Button(action: {
-                                    quality = i + 1
-                                }) {
-                                    Text(qualityEmojis[i])
-                                        .font(.largeTitle)
-                                        .cornerRadius(10)
-                                        .foregroundColor(.white)
+                List {
+                    ForEach(sleepRecords) { record in
+                        VStack(alignment: .leading) {
+                            Button(action: {
+                                if showingDetailsFor == record {
+                                    showingDetailsFor = nil
+                                } else {
+                                    showingDetailsFor = record
                                 }
+                            }) {
+                                HStack {
+                                    Text(formattedDate(record.date!))
+                                    Spacer()
+                                    Text(sleepDuration(record))
+                                }
+                                .padding(.horizontal)
+                                SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
+                            }
+                            if showingDetailsFor == record {
+                                Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
+                                Text("Notes: \(record.notes ?? "")")
                             }
                         }
-                        
-                        TextField("Notes", text: $notes)
-                        Button(action: addSleepRecord) {
-                            Text("Save Record")
-                        }
+                        .foregroundStyle(Color(.label))
                     }
-                    
-                    Section(header: Text("Sleep Records")) {
-                        List {
-                            ForEach(sleepRecords) { record in
-                                VStack(alignment: .leading) {
-                                    Button(action: {
-                                        if showingDetailsFor == record {
-                                            showingDetailsFor = nil
-                                        } else {
-                                            showingDetailsFor = record
-                                        }
-                                    }) {
-                                        HStack {
-                                            Text(formattedDate(record.date!))
-                                            Spacer()
-                                            Text(sleepDuration(record))
-                                        } .padding(.horizontal)
-                                        SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
-                                    }
-                                    if showingDetailsFor == record {
-                                        Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
-                                        Text("Notes: \(record.notes ?? "")")
-                                    }
-                                }
-                                .foregroundStyle(Color(.label))
-                            }
-                            .onDelete(perform: deleteSleepRecords)
-                        }
-                    }
+                    .onDelete(perform: deleteSleepRecords)
                 }
             }
             .navigationBarTitle("Sleep Tracker")
+            .navigationBarItems(trailing: Button(action: {
+                isShowingAddNewRecord.toggle()
+            }) {
+                Image(systemName: "plus")
+            })
+            .overlay(
+                Group {
+                    if isShowingAddNewRecord {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                        VStack {
+                            Form {
+                                Section(header: Text("Add New Sleep Record")) {
+                                    DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
+                                    DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
+                                    DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
+                                    
+                                    HStack {
+                                        ForEach(0..<5) { i in
+                                            Button(action: {
+                                                quality = i + 1
+                                            }) {
+                                                Text(qualityEmojis[i])
+                                                    .font(.largeTitle)
+                                                    .cornerRadius(10)
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                    }
+                                    
+                                    TextField("Notes", text: $notes)
+                                    Button(action: {
+                                        addSleepRecord()
+                                        isShowingAddNewRecord = false
+                                    }) {
+                                        Text("Save Record")
+                                    }
+                                }
+                            }
+                            .frame(width: 300, height: 400)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                            .shadow(radius: 20)
+                            Button("Close") {
+                                isShowingAddNewRecord = false
+                            }
+                            .padding()
+                        }
+                    }
+                }
+            )
         }
     }
     
@@ -93,7 +117,7 @@ struct SleepTrackerView: View {
         formatter.dateFormat = "d MMMM"
         return formatter.string(from: date)
     }
-
+    
     private func sleepDuration(_ record: SleepRecord) -> String {
         let calendar = Calendar.current
         let startTime = calendar.date(bySettingHour: 23, minute: 0, second: 0, of: record.sleepTime!)!
@@ -149,7 +173,7 @@ struct SleepTrackerView_Previews: PreviewProvider {
     }
 }
 
-
 #Preview {
     SleepTrackerView()
 }
+
