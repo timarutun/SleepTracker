@@ -4,7 +4,6 @@
 //
 //  Created by Timur on 6/19/24.
 //
-//["😡", "😠", "🙂", "😀", "😍"]
 
 import SwiftUI
 import CoreData
@@ -76,15 +75,19 @@ struct SleepTrackerView: View {
                                     DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
                                     
                                     HStack {
-                                        ForEach(0..<5) { i in
+                                        ForEach(0..<5, id: \.self) { i in
                                             Button(action: {
-                                                quality = i + 1
+                                                self.quality = i + 1
+                                                print("q = \(quality), i = \(i)")
                                             }) {
                                                 Text(qualityEmojis[i])
                                                     .font(.largeTitle)
                                                     .cornerRadius(10)
                                                     .foregroundColor(.white)
+                                                    .background(quality == i + 1 ? Color.blue : Color.clear)
+                                                    .clipShape(Circle())
                                             }
+                                            .buttonStyle(PlainButtonStyle())
                                         }
                                     }
                                     
@@ -176,4 +179,3 @@ struct SleepTrackerView_Previews: PreviewProvider {
 #Preview {
     SleepTrackerView()
 }
-
