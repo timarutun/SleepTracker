@@ -26,6 +26,22 @@ struct SleepTrackerView: View {
     private let qualityEmojis = ["😡", "😠", "🙂", "😀", "😍"]
     
     var body: some View {
+        TabView {
+            mainView
+                .tabItem {
+                    Image(systemName: "bed.double.fill")
+                    Text("Sleep Tracker")
+                }
+            
+            StatisticsView()
+                .tabItem {
+                    Image(systemName: "chart.bar.fill")
+                    Text("Statistics")
+                }
+        }
+    }
+    
+    var mainView: some View {
         NavigationView {
             VStack {
                 List {
@@ -104,10 +120,16 @@ struct SleepTrackerView: View {
                             .background(Color.white)
                             .cornerRadius(10)
                             .shadow(radius: 20)
-                            Button("Close") {
+                            Button(action: {
                                 isShowingAddNewRecord = false
+                            }) {
+                                Text("Close")
+                                    .font(.callout)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color.red)
+                                    .cornerRadius(10)
                             }
-                            .padding()
                         }
                     }
                 }
@@ -179,3 +201,4 @@ struct SleepTrackerView_Previews: PreviewProvider {
 #Preview {
     SleepTrackerView()
 }
+

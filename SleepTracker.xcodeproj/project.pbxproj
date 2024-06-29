@@ -14,6 +14,7 @@
 		39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF92C23D8590050DC0E /* Persistence.swift */; };
 		39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 39599EFB2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld */; };
 		39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599F052C23DC8D0050DC0E /* SleepBarView.swift */; };
+		39CCBFD02C2FD604004C65DB /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		39599EF92C23D8590050DC0E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		39599EFC2C23D8590050DC0E /* SleepTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SleepTracker.xcdatamodel; sourceTree = "<group>"; };
 		39599F052C23DC8D0050DC0E /* SleepBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBarView.swift; sourceTree = "<group>"; };
+		39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			children = (
 				39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */,
 				39599EF22C23D8570050DC0E /* SleepTrackerView.swift */,
+				39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */,
 				39599EF42C23D8590050DC0E /* Assets.xcassets */,
 				39599EF92C23D8590050DC0E /* Persistence.swift */,
 				39599F052C23DC8D0050DC0E /* SleepBarView.swift */,
@@ -147,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */,
+				39CCBFD02C2FD604004C65DB /* StatisticsView.swift in Sources */,
 				39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */,
 				39599EF32C23D8570050DC0E /* SleepTrackerView.swift in Sources */,
 				39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */,
