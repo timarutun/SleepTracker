@@ -16,7 +16,7 @@ struct StatisticsView: View {
     private var sleepRecords: FetchedResults<SleepRecord>
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             Text("Overall Statistics")
                 .font(.largeTitle)
                 .padding()
@@ -31,24 +31,43 @@ struct StatisticsView: View {
                 let averageDuration = totalDuration / Double(sleepRecords.count)
                 let averageDurationHours = Int(averageDuration) / 3600
                 let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
-
                 
                 Text("Average Sleep Duration: \(averageDurationHours)h \(averageDurationMinutes)m")
+                
+                let optimalDuration = optimalSleepDuration(for: sleepRecords)
+                if let optimalDuration = optimalDuration {
+                    let hours = Int(optimalDuration) / 3600
+                    let minutes = (Int(optimalDuration) % 3600) / 60
+                    Text("Optimal Sleep Duration: \(hours)h \(minutes)m")
+                } else {
+                    Text("Not enough data to determine optimal sleep duration")
+                }
             }
         }
         .padding()
     }
     
-    private func averageTime(for dates: [Date]) -> Date {
-        let totalTimeInterval = dates.map { $0.timeIntervalSinceReferenceDate }.reduce(0, +)
-        let averageTimeInterval = totalTimeInterval / Double(dates.count)
-        return Date(timeIntervalSinceReferenceDate: averageTimeInterval)
-    }
-    
-    private func formattedTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+    private func optimalSleepDuration(for records: FetchedResults<SleepRecord>) -> TimeInterval? {
+        guard !records.isEmpty else { return nil }
+        
+        // Filtred only records with 4 and 5 quality
+        let filteredRecords = records.filter { $0.quality == 4 || $0.quality == 5 }
+        
+        guard !filteredRecords.isEmpty else { return nil }
+        
+        // Total duration and total weight calculation
+        var totalDuration: TimeInterval = 0
+        var totalWeight: Double = 0
+        
+        for record in filteredRecords {
+            let duration = record.wakeTime!.timeIntervalSince(record.sleepTime!)
+            let weight = record.quality == 5 ? 2.0 : 1.0
+            totalDuration += duration * weight
+            totalWeight += weight
+        }
+        
+        // Calculate avarage sleep duration
+        return totalWeight == 0 ? nil : totalDuration / totalWeight
     }
 }
 
