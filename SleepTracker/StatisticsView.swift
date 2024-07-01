@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import Charts
 
 struct StatisticsView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -19,32 +20,39 @@ struct StatisticsView: View {
         VStack {
             Text("Overall Statistics")
                 .font(.largeTitle)
+            
                 .padding()
+            
+            VStack(alignment: .leading, spacing: 10) {
             
             Text("Total Sleep Records: \(sleepRecords.count)")
             
             let averageQuality = sleepRecords.isEmpty ? 0 : Double(sleepRecords.map { $0.quality }.reduce(0, +)) / Double(sleepRecords.count)
+                let sleepSatisfaction = (averageQuality / 5.0) * 100
             Text("Average Sleep Quality: \(String(format: "%.1f", averageQuality))")
+            Text("Sleep Satisfaction: \(String(format: "%.1f", sleepSatisfaction))%")
             
-            if !sleepRecords.isEmpty {
-                let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
-                let averageDuration = totalDuration / Double(sleepRecords.count)
-                let averageDurationHours = Int(averageDuration) / 3600
-                let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
-                
-                Text("Average Sleep Duration: \(averageDurationHours)h \(averageDurationMinutes)m")
-                
-                let optimalDuration = optimalSleepDuration(for: sleepRecords)
-                if let optimalDuration = optimalDuration {
-                    let hours = Int(optimalDuration) / 3600
-                    let minutes = (Int(optimalDuration) % 3600) / 60
-                    Text("Optimal Sleep Duration: \(hours)h \(minutes)m")
-                } else {
-                    Text("Not enough data to determine optimal sleep duration")
+                if !sleepRecords.isEmpty {
+                    let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
+                    let averageDuration = totalDuration / Double(sleepRecords.count)
+                    let averageDurationHours = Int(averageDuration) / 3600
+                    let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
+                    
+                    Text("Average Sleep Duration: \(averageDurationHours)h \(averageDurationMinutes)m")
+                    
+                    let optimalDuration = optimalSleepDuration(for: sleepRecords)
+                    if let optimalDuration = optimalDuration {
+                        let hours = Int(optimalDuration) / 3600
+                        let minutes = (Int(optimalDuration) % 3600) / 60
+                        Text("Optimal Sleep Duration: \(hours)h \(minutes)m")
+                    } else {
+                        Text("Not enough data to determine optimal sleep duration")
+                    }
                 }
             }
+            .fontWeight(.medium)
+
         }
-        .padding()
     }
     
     private func optimalSleepDuration(for records: FetchedResults<SleepRecord>) -> TimeInterval? {
