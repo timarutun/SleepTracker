@@ -17,21 +17,27 @@ struct StatisticsView: View {
     private var sleepRecords: FetchedResults<SleepRecord>
     
     var body: some View {
+        
+        let averageQuality = sleepRecords.isEmpty ? 0 : Double(sleepRecords.map { $0.quality }.reduce(0, +)) / Double(sleepRecords.count)
+        
+        let sleepSatisfaction = (averageQuality / 5.0) * 100
+        
         VStack {
             Text("Overall Statistics")
                 .font(.largeTitle)
-            
-                .padding()
+                .padding(30)
+            SleepSatisfactionChart(satisfaction: sleepSatisfaction)
+                .frame(height: 200)
+                .padding(.bottom, 50)
             
             VStack(alignment: .leading, spacing: 10) {
-            
-            Text("Total Sleep Records: \(sleepRecords.count)")
-            
-            let averageQuality = sleepRecords.isEmpty ? 0 : Double(sleepRecords.map { $0.quality }.reduce(0, +)) / Double(sleepRecords.count)
-                let sleepSatisfaction = (averageQuality / 5.0) * 100
-            Text("Average Sleep Quality: \(String(format: "%.1f", averageQuality))")
-            Text("Sleep Satisfaction: \(String(format: "%.1f", sleepSatisfaction))%")
-            
+                Text("Total Sleep Records: \(sleepRecords.count)")
+                
+                
+                Text("Average Sleep Quality: \(String(format: "%.1f", averageQuality))")
+                Text("Sleep Satisfaction: \(String(format: "%.1f", sleepSatisfaction))%")
+                
+                
                 if !sleepRecords.isEmpty {
                     let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
                     let averageDuration = totalDuration / Double(sleepRecords.count)
@@ -51,14 +57,14 @@ struct StatisticsView: View {
                 }
             }
             .fontWeight(.medium)
-
+            Spacer()
         }
     }
     
     private func optimalSleepDuration(for records: FetchedResults<SleepRecord>) -> TimeInterval? {
         guard !records.isEmpty else { return nil }
         
-        // Filtred only records with 4 and 5 quality
+        // Filter only records with 4 and 5 quality
         let filteredRecords = records.filter { $0.quality == 4 || $0.quality == 5 }
         
         guard !filteredRecords.isEmpty else { return nil }
@@ -74,8 +80,38 @@ struct StatisticsView: View {
             totalWeight += weight
         }
         
-        // Calculate avarage sleep duration
+        // Calculate average sleep duration
         return totalWeight == 0 ? nil : totalDuration / totalWeight
+    }
+}
+
+struct SleepSatisfactionChart: View {
+    let satisfaction: Double
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .trim(from: 0.0, to: CGFloat(min(satisfaction / 100.0, 1.0)))
+                .stroke(satisfactionColor, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                .rotationEffect(Angle(degrees: 270.0))
+                .animation(.easeOut, value: satisfaction)
+            
+            Text(String(format: "%.1f%%", satisfaction))
+                .font(.largeTitle)
+                .bold()
+                .foregroundColor(satisfactionColor)
+        }
+    }
+    
+    private var satisfactionColor: Color {
+        switch satisfaction {
+        case 80...100:
+            return .green
+        case 60..<80:
+            return .yellow
+        default:
+            return .red
+        }
     }
 }
 
