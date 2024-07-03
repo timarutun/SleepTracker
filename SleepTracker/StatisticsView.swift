@@ -17,47 +17,87 @@ struct StatisticsView: View {
     private var sleepRecords: FetchedResults<SleepRecord>
     
     var body: some View {
-        
         let averageQuality = sleepRecords.isEmpty ? 0 : Double(sleepRecords.map { $0.quality }.reduce(0, +)) / Double(sleepRecords.count)
-        
         let sleepSatisfaction = (averageQuality / 5.0) * 100
         
-        VStack {
-            Text("Overall Statistics")
-                .font(.largeTitle)
-                .padding(30)
-            SleepSatisfactionChart(satisfaction: sleepSatisfaction)
-                .frame(height: 200)
-                .padding(.bottom, 50)
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                .edgesIgnoringSafeArea(.all)
             
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Total Sleep Records: \(sleepRecords.count)")
+            VStack {
+                Text("Overall Statistics")
+                    .font(.largeTitle)
+                    .padding(.top, 30)
+                    .padding(.bottom, 10)
+                    .foregroundColor(.white)
+                SleepSatisfactionChart(satisfaction: sleepSatisfaction)
+                    .frame(height: 200)
+                    .padding(.bottom, 50)
                 
-                
-                Text("Average Sleep Quality: \(String(format: "%.1f", averageQuality))")
-                Text("Sleep Satisfaction: \(String(format: "%.1f", sleepSatisfaction))%")
-                
-                
-                if !sleepRecords.isEmpty {
-                    let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
-                    let averageDuration = totalDuration / Double(sleepRecords.count)
-                    let averageDurationHours = Int(averageDuration) / 3600
-                    let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
-                    
-                    Text("Average Sleep Duration: \(averageDurationHours)h \(averageDurationMinutes)m")
-                    
-                    let optimalDuration = optimalSleepDuration(for: sleepRecords)
-                    if let optimalDuration = optimalDuration {
-                        let hours = Int(optimalDuration) / 3600
-                        let minutes = (Int(optimalDuration) % 3600) / 60
-                        Text("Optimal Sleep Duration: \(hours)h \(minutes)m")
-                    } else {
-                        Text("Not enough data to determine optimal sleep duration")
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Average Sleep Quality:")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Text("Average Sleep Duration:")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            if !sleepRecords.isEmpty {
+                                Text("Optimal Sleep Duration:")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 10) {
+                            Text("\(String(format: "%.1f", averageQuality))")
+                                .font(.title2)
+                                .bold()
+                                .foregroundColor(.yellow)
+                            
+                            if !sleepRecords.isEmpty {
+                                let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
+                                let averageDuration = totalDuration / Double(sleepRecords.count)
+                                let averageDurationHours = Int(averageDuration) / 3600
+                                let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
+                                
+                                Text("\(averageDurationHours)h \(averageDurationMinutes)m")
+                                    .font(.title2)
+                                    .bold()
+                                    .foregroundColor(.yellow)
+                                
+                                let optimalDuration = optimalSleepDuration(for: sleepRecords)
+                                if let optimalDuration = optimalDuration {
+                                    let hours = Int(optimalDuration) / 3600
+                                    let minutes = (Int(optimalDuration) % 3600) / 60
+                                    Text("\(hours)h \(minutes)m")
+                                        .font(.title2)
+                                        .bold()
+                                        .foregroundColor(.yellow)
+                                } else {
+                                    Text("N/A")
+                                        .font(.title2)
+                                        .bold()
+                                        .foregroundColor(.gray)
+                                }
+                            } else {
+                                Text("N/A")
+                                    .font(.title2)
+                                    .bold()
+                                    .foregroundColor(.gray)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(Color.black.opacity(0.5))
+                    .cornerRadius(10)
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+                Spacer()
             }
-            .fontWeight(.medium)
-            Spacer()
         }
     }
     
@@ -95,11 +135,15 @@ struct SleepSatisfactionChart: View {
                 .stroke(satisfactionColor, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                 .rotationEffect(Angle(degrees: 270.0))
                 .animation(.easeOut, value: satisfaction)
-            
-            Text(String(format: "%.1f%%", satisfaction))
-                .font(.largeTitle)
+            VStack {
+                Text("Satisfaction:")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                Text(String(format: "%.1f%%", satisfaction))
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+            }
                 .bold()
-                .foregroundColor(satisfactionColor)
         }
     }
     
