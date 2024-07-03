@@ -31,7 +31,7 @@ struct SleepBarView: View {
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: geometry.size.height * 0.5)
                     Rectangle()
-                        .fill(Color.yellow)
+                        .fill(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing))
                         .frame(width: geometry.size.width * CGFloat(sleepDurationRatio), height: geometry.size.height * 0.5)
                         .offset(x: geometry.size.width * CGFloat(sleepStartRatio))
                 }
