@@ -31,7 +31,7 @@ struct SleepBarView: View {
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: geometry.size.height * 0.5)
                     Rectangle()
-                        .fill(Color.blue)
+                        .fill(Color.yellow)
                         .frame(width: geometry.size.width * CGFloat(sleepDurationRatio), height: geometry.size.height * 0.5)
                         .offset(x: geometry.size.width * CGFloat(sleepStartRatio))
                 }

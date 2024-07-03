@@ -43,97 +43,124 @@ struct SleepTrackerView: View {
     
     var mainView: some View {
         NavigationView {
-            VStack {
-                List {
-                    ForEach(sleepRecords) { record in
-                        VStack(alignment: .leading) {
-                            Button(action: {
-                                if showingDetailsFor == record {
-                                    showingDetailsFor = nil
-                                } else {
-                                    showingDetailsFor = record
-                                }
-                            }) {
-                                HStack {
-                                    Text(formattedDate(record.date!))
-                                    Spacer()
-                                    Text(sleepDuration(record))
-                                }
-                                .padding(.horizontal)
-                                SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
-                            }
-                            if showingDetailsFor == record {
-                                Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
-                                Text("Notes: \(record.notes ?? "")")
-                            }
-                        }
-                        .foregroundStyle(Color(.label))
-                    }
-                    .onDelete(perform: deleteSleepRecords)
-                }
-            }
-            .navigationBarTitle("Sleep Tracker")
-            .navigationBarItems(trailing: Button(action: {
-                isShowingAddNewRecord.toggle()
-            }) {
-                Image(systemName: "plus")
-            })
-            .overlay(
-                Group {
-                    if isShowingAddNewRecord {
-                        Color.black.opacity(0.4)
-                            .edgesIgnoringSafeArea(.all)
-                        VStack {
-                            Form {
-                                Section(header: Text("Add New Sleep Record")) {
-                                    DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
-                                    DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
-                                    DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
-                                    
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    List {
+                        ForEach(sleepRecords) { record in
+                            VStack(alignment: .leading) {
+                                Button(action: {
+                                    if showingDetailsFor == record {
+                                        showingDetailsFor = nil
+                                    } else {
+                                        showingDetailsFor = record
+                                    }
+                                }) {
                                     HStack {
-                                        ForEach(0..<5, id: \.self) { i in
-                                            Button(action: {
-                                                self.quality = i + 1
-                                                print("q = \(quality), i = \(i)")
-                                            }) {
-                                                Text(qualityEmojis[i])
-                                                    .font(.largeTitle)
-                                                    .cornerRadius(10)
-                                                    .foregroundColor(.white)
-                                                    .background(quality == i + 1 ? Color.blue : Color.clear)
-                                                    .clipShape(Circle())
+                                        Text(formattedDate(record.date!))
+                                            .foregroundColor(.black)
+                                            .font(.headline)
+                                            .padding(.leading)
+                                        Spacer()
+                                        Text(sleepDuration(record))
+                                            .foregroundColor(.black)
+                                            .font(.subheadline)
+                                            .padding(.trailing)
+                                    }
+                                    .padding(.horizontal)
+                                    SleepBarView(sleepTime: record.sleepTime!, wakeTime: record.wakeTime!)
+                                }
+                                if showingDetailsFor == record {
+                                    Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
+                                        .foregroundColor(.black)
+                                        .padding(.leading)
+                                    Text("Notes: \(record.notes ?? "")")
+                                        .foregroundColor(.black)
+                                        .padding(.leading)
+                                }
+                            }
+                            .background(Color.clear)
+                        }
+                        .onDelete(perform: deleteSleepRecords)
+                    }
+                    .listStyle(PlainListStyle())
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .edgesIgnoringSafeArea(.all))
+                }
+                .navigationBarTitle("Sleep Tracker")
+                .navigationBarItems(trailing: Button(action: {
+                    isShowingAddNewRecord.toggle()
+                }) {
+                    Image(systemName: "plus")
+                        .foregroundColor(.white)
+                })
+                .overlay(
+                    Group {
+                        if isShowingAddNewRecord {
+                            Color.black.opacity(0.4)
+                                .edgesIgnoringSafeArea(.all)
+                            
+                            VStack {
+                                Form {
+                                    Section(header: Text("Add New Sleep Record").foregroundColor(.white)) {
+                                        DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
+                                            .foregroundColor(.black)
+                                        DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
+                                            .foregroundColor(.black)
+                                        DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
+                                            .foregroundColor(.black)
+                                        
+                                        HStack {
+                                            ForEach(0..<5, id: \.self) { i in
+                                                Button(action: {
+                                                    self.quality = i + 1
+                                                    print("q = \(quality), i = \(i)")
+                                                }) {
+                                                    Text(qualityEmojis[i])
+                                                        .font(.largeTitle)
+                                                        .cornerRadius(10)
+                                                        .foregroundColor(.black)
+                                                        .background(quality == i + 1 ? Color.blue : Color.clear)
+                                                        .clipShape(Circle())
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
                                             }
-                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                        
+                                        
+                                        TextField("Notes", text: $notes)
+                                            .foregroundColor(.black)
+                                        Button(action: {
+                                            addSleepRecord()
+                                            isShowingAddNewRecord = false
+                                        }) {
+                                            Text("Save Record")
+                                                .foregroundColor(.blue)
                                         }
                                     }
-                                    
-                                    TextField("Notes", text: $notes)
-                                    Button(action: {
-                                        addSleepRecord()
-                                        isShowingAddNewRecord = false
-                                    }) {
-                                        Text("Save Record")
-                                    }
                                 }
-                            }
-                            .frame(width: 300, height: 400)
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .shadow(radius: 20)
-                            Button(action: {
-                                isShowingAddNewRecord = false
-                            }) {
-                                Text("Close")
-                                    .font(.callout)
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .background(Color.red)
-                                    .cornerRadius(10)
+                                .frame(width: 300, height: 400)
+                                .background(Color.black.opacity(0.8))
+                                .cornerRadius(10)
+                                .shadow(radius: 20)
+                                
+                                Button(action: {
+                                    isShowingAddNewRecord = false
+                                }) {
+                                    Text("Close")
+                                        .font(.callout)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .background(Color.red)
+                                        .cornerRadius(10)
+                                }
                             }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
     
@@ -201,4 +228,3 @@ struct SleepTrackerView_Previews: PreviewProvider {
 #Preview {
     SleepTrackerView()
 }
-
