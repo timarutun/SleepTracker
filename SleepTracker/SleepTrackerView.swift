@@ -96,6 +96,7 @@ struct SleepTrackerView: View {
                     Image(systemName: "plus")
                         .foregroundColor(.white)
                 })
+                .modifier(NavigationBarModifier())
                 .overlay(
                     Group {
                         if isShowingAddNewRecord {
@@ -216,6 +217,24 @@ struct SleepTrackerView: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+}
+
+
+struct NavigationBarModifier: ViewModifier {
+    
+    init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
+    func body(content: Content) -> some View {
+        content
     }
 }
 

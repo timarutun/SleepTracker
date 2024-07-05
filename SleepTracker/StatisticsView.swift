@@ -9,15 +9,41 @@ import SwiftUI
 import CoreData
 import Charts
 
+enum TimePeriod: String, CaseIterable {
+    case week = "Week"
+    case month = "Month"
+    case allTime = "All Time"
+}
+
 struct StatisticsView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \SleepRecord.date, ascending: false)],
-        animation: .default)
-    private var sleepRecords: FetchedResults<SleepRecord>
+    @State private var selectedPeriod: TimePeriod = .allTime
+    @FetchRequest private var sleepRecords: FetchedResults<SleepRecord>
+    
+    init() {
+        let request: NSFetchRequest<SleepRecord> = SleepRecord.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \SleepRecord.date, ascending: false)]
+        _sleepRecords = FetchRequest(fetchRequest: request)
+    }
+    
+    var filteredRecords: [SleepRecord] {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        switch selectedPeriod {
+        case .week:
+            let weekAgo = calendar.date(byAdding: .weekOfYear, value: -1, to: now)!
+            return sleepRecords.filter { $0.date! >= weekAgo }
+        case .month:
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: now)!
+            return sleepRecords.filter { $0.date! >= monthAgo }
+        case .allTime:
+            return Array(sleepRecords)
+        }
+    }
     
     var body: some View {
-        let averageQuality = sleepRecords.isEmpty ? 0 : Double(sleepRecords.map { $0.quality }.reduce(0, +)) / Double(sleepRecords.count)
+        let averageQuality = filteredRecords.isEmpty ? 0 : Double(filteredRecords.map { $0.quality }.reduce(0, +)) / Double(filteredRecords.count)
         let sleepSatisfaction = (averageQuality / 5.0) * 100
         
         ZStack {
@@ -27,9 +53,18 @@ struct StatisticsView: View {
             VStack {
                 Text("Overall Statistics")
                     .font(.largeTitle)
-                    .padding(.top, 30)
-                    .padding(.bottom, 10)
+                    .padding(.vertical, 30)
                     .foregroundColor(.white)
+                
+                Picker("Time Period", selection: $selectedPeriod) {
+                    ForEach(TimePeriod.allCases, id: \.self) { period in
+                        Text(period.rawValue).tag(period)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal, 20)
+                .padding(.bottom, 40)
+                
                 SleepSatisfactionChart(satisfaction: sleepSatisfaction)
                     .frame(height: 200)
                     .padding(.bottom, 50)
@@ -43,7 +78,7 @@ struct StatisticsView: View {
                             Text("Average Sleep Duration:")
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            if !sleepRecords.isEmpty {
+                            if !filteredRecords.isEmpty {
                                 Text("Optimal Sleep Duration:")
                                     .font(.headline)
                                     .foregroundColor(.white)
@@ -56,9 +91,9 @@ struct StatisticsView: View {
                                 .bold()
                                 .foregroundColor(.yellow)
                             
-                            if !sleepRecords.isEmpty {
-                                let totalDuration = sleepRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
-                                let averageDuration = totalDuration / Double(sleepRecords.count)
+                            if !filteredRecords.isEmpty {
+                                let totalDuration = filteredRecords.map { $0.wakeTime!.timeIntervalSince($0.sleepTime!) }.reduce(0, +)
+                                let averageDuration = totalDuration / Double(filteredRecords.count)
                                 let averageDurationHours = Int(averageDuration) / 3600
                                 let averageDurationMinutes = (Int(averageDuration) % 3600) / 60
                                 
@@ -67,7 +102,7 @@ struct StatisticsView: View {
                                     .bold()
                                     .foregroundColor(.yellow)
                                 
-                                let optimalDuration = optimalSleepDuration(for: sleepRecords)
+                                let optimalDuration = optimalSleepDuration(for: filteredRecords)
                                 if let optimalDuration = optimalDuration {
                                     let hours = Int(optimalDuration) / 3600
                                     let minutes = (Int(optimalDuration) % 3600) / 60
@@ -101,7 +136,7 @@ struct StatisticsView: View {
         }
     }
     
-    private func optimalSleepDuration(for records: FetchedResults<SleepRecord>) -> TimeInterval? {
+    private func optimalSleepDuration(for records: [SleepRecord]) -> TimeInterval? {
         guard !records.isEmpty else { return nil }
         
         // Filter only records with 4 and 5 quality
@@ -132,7 +167,7 @@ struct SleepSatisfactionChart: View {
         ZStack {
             Circle()
                 .trim(from: 0.0, to: CGFloat(min(satisfaction / 100.0, 1.0)))
-                .stroke(satisfactionColor, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                .stroke(.yellow, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                 .rotationEffect(Angle(degrees: 270.0))
                 .animation(.easeOut, value: satisfaction)
             VStack {
@@ -147,16 +182,16 @@ struct SleepSatisfactionChart: View {
         }
     }
     
-    private var satisfactionColor: Color {
-        switch satisfaction {
-        case 80...100:
-            return .green
-        case 60..<80:
-            return .yellow
-        default:
-            return .red
-        }
-    }
+//    private var satisfactionColor: Color {
+//        switch satisfaction {
+//        case 80...100:
+//            return .green
+//        case 60..<80:
+//            return .yellow
+//        default:
+//            return .red
+//        }
+//    }
 }
 
 struct StatisticsView_Previews: PreviewProvider {

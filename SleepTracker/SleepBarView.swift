@@ -28,7 +28,7 @@ struct SleepBarView: View {
             VStack(spacing: 2) {
                 ZStack(alignment: .leading) {
                     Rectangle()
-                        .fill(Color.gray.opacity(0.2))
+                        .fill(Color.purple.opacity(0.2))
                         .frame(height: geometry.size.height * 0.5)
                     Rectangle()
                         .fill(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing))
@@ -51,7 +51,13 @@ struct SleepBarView: View {
     }
 }
 
-
-
-
-
+struct SleepBarView_Previews: PreviewProvider {
+    static var previews: some View {
+        SleepBarView(
+            sleepTime: Calendar.current.date(bySettingHour: 23, minute: 0, second: 0, of: Date())!,
+            wakeTime: Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date().addingTimeInterval(86400))!
+        )
+        .previewLayout(.sizeThatFits)
+        .padding()
+    }
+}
