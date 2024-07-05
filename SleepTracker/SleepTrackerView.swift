@@ -108,13 +108,13 @@ struct SleepTrackerView: View {
                                     Section(header: Text("Add New Sleep Record").foregroundColor(.gray)) {
                                         DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
                                             .foregroundColor(.black)
-                                            .padding(.vertical, 2)
+                                            .padding(.vertical, 4)
                                         DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
                                             .foregroundColor(.black)
-                                            .padding(.vertical, 2)
+                                            .padding(.vertical, 4)
                                         DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
                                             .foregroundColor(.black)
-                                            .padding(.vertical, 2)
+                                            .padding(.vertical, 4)
                                         
                                         HStack {
                                             ForEach(0..<5, id: \.self) { i in
@@ -137,40 +137,38 @@ struct SleepTrackerView: View {
                                         TextField("Notes", text: $notes)
                                             .foregroundColor(.black)
                                         
-                                        
-                                        HStack(alignment: .center) {
-                                            Button(action: {
-                                                addSleepRecord()
-                                                isShowingAddNewRecord = false
-                                            }) {
-                                                Text("Save Record")
-                                                    .font(.callout)
-                                                    .foregroundColor(.white)
-                                                    .padding()
-                                                    .background(Color.blue)
-                                                    .cornerRadius(10)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Button(action: {
-                                                isShowingAddNewRecord = false
-                                            }) {
-                                                Text("Close")
-                                                    .font(.callout)
-                                                    .foregroundColor(.white)
-                                                    .padding()
-                                                    .background(Color.red)
-                                                    .cornerRadius(10)
-                                            }
-                                        }
                                     }
                                 }
-                                .frame(width: 300, height: 400)
+                                .frame(width: 300, height: 380)
                                 .background(Color.black.opacity(0.8))
                                 .cornerRadius(10)
                                 .shadow(radius: 20)
                                 
+                                HStack(alignment: .center) {
+                                    Button(action: {
+                                        addSleepRecord()
+                                        isShowingAddNewRecord = false
+                                    }) {
+                                        Text("Save Record")
+                                            .font(.callout)
+                                            .foregroundColor(.white)
+                                            .padding()
+                                            .background(Color.blue)
+                                            .cornerRadius(10)
+                                    }
+                                    
+                                    
+                                    Button(action: {
+                                        isShowingAddNewRecord = false
+                                    }) {
+                                        Text("Close")
+                                            .font(.callout)
+                                            .foregroundColor(.white)
+                                            .padding()
+                                            .background(Color.red)
+                                            .cornerRadius(10)
+                                    }
+                                }
                             }
                         }
                     }
