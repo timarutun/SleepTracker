@@ -38,7 +38,7 @@ struct SleepTrackerView: View {
                     Image(systemName: "chart.bar.fill")
                     Text("Statistics")
                 }
-        }
+        }      
     }
     
     var mainView: some View {
@@ -100,18 +100,21 @@ struct SleepTrackerView: View {
                 .overlay(
                     Group {
                         if isShowingAddNewRecord {
-                            Color.black.opacity(0.4)
+                            Color.black.opacity(0.5)
                                 .edgesIgnoringSafeArea(.all)
                             
                             VStack {
                                 Form {
-                                    Section(header: Text("Add New Sleep Record").foregroundColor(.white)) {
+                                    Section(header: Text("Add New Sleep Record").foregroundColor(.gray)) {
                                         DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
                                             .foregroundColor(.black)
+                                            .padding(.vertical, 2)
                                         DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
                                             .foregroundColor(.black)
+                                            .padding(.vertical, 2)
                                         DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
                                             .foregroundColor(.black)
+                                            .padding(.vertical, 2)
                                         
                                         HStack {
                                             ForEach(0..<5, id: \.self) { i in
@@ -133,12 +136,33 @@ struct SleepTrackerView: View {
                                         
                                         TextField("Notes", text: $notes)
                                             .foregroundColor(.black)
-                                        Button(action: {
-                                            addSleepRecord()
-                                            isShowingAddNewRecord = false
-                                        }) {
-                                            Text("Save Record")
-                                                .foregroundColor(.blue)
+                                        
+                                        
+                                        HStack(alignment: .center) {
+                                            Button(action: {
+                                                addSleepRecord()
+                                                isShowingAddNewRecord = false
+                                            }) {
+                                                Text("Save Record")
+                                                    .font(.callout)
+                                                    .foregroundColor(.white)
+                                                    .padding()
+                                                    .background(Color.blue)
+                                                    .cornerRadius(10)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Button(action: {
+                                                isShowingAddNewRecord = false
+                                            }) {
+                                                Text("Close")
+                                                    .font(.callout)
+                                                    .foregroundColor(.white)
+                                                    .padding()
+                                                    .background(Color.red)
+                                                    .cornerRadius(10)
+                                            }
                                         }
                                     }
                                 }
@@ -147,16 +171,6 @@ struct SleepTrackerView: View {
                                 .cornerRadius(10)
                                 .shadow(radius: 20)
                                 
-                                Button(action: {
-                                    isShowingAddNewRecord = false
-                                }) {
-                                    Text("Close")
-                                        .font(.callout)
-                                        .foregroundColor(.white)
-                                        .padding()
-                                        .background(Color.red)
-                                        .cornerRadius(10)
-                                }
                             }
                         }
                     }
@@ -237,6 +251,8 @@ struct NavigationBarModifier: ViewModifier {
         content
     }
 }
+
+
 
 struct SleepTrackerView_Previews: PreviewProvider {
     static var previews: some View {
