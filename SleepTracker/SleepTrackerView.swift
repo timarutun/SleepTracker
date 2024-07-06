@@ -38,8 +38,15 @@ struct SleepTrackerView: View {
                     Image(systemName: "chart.bar.fill")
                     Text("Statistics")
                 }
-        }      
+            
+            CalendarView()
+                .tabItem {
+                    Image(systemName: "calendar")
+                    Text("Calendar")
+                }
+        }
     }
+
     
     var mainView: some View {
         NavigationView {
