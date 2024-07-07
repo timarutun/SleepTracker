@@ -53,6 +53,7 @@ struct StatisticsView: View {
             VStack {
                 Text("Overall Statistics")
                     .font(.largeTitle)
+                    .fontWeight(.bold)
                     .padding(.vertical, 30)
                     .foregroundColor(.white)
                 

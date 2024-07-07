@@ -45,6 +45,7 @@ struct SleepTrackerView: View {
                     Text("Calendar")
                 }
         }
+        .modifier(TabBarModifier())
     }
 
     
@@ -96,7 +97,15 @@ struct SleepTrackerView: View {
                     .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
                     .edgesIgnoringSafeArea(.all))
                 }
-                .navigationBarTitle("Sleep Tracker")
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Sleep Tracker")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color.white)
+                            .padding(.top, 70)
+                    }
+                }
                 .navigationBarItems(trailing: Button(action: {
                     isShowingAddNewRecord.toggle()
                 }) {
@@ -256,6 +265,36 @@ struct NavigationBarModifier: ViewModifier {
         content
     }
 }
+
+struct TabBarModifier: ViewModifier {
+    
+    init() {
+        let appearance = UITabBarAppearance()
+        
+
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.purple
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.purple]
+        
+
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.gray
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.gray]
+        
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+        
+
+        UITabBar.appearance().isTranslucent = true
+        
+
+        UITabBar.appearance().backgroundImage = UIImage()
+    }
+    
+    func body(content: Content) -> some View {
+        content
+    }
+}
+
 
 
 

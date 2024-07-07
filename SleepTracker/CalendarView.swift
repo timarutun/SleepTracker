@@ -27,14 +27,16 @@ struct CalendarView: View {
                     CustomCalendarView(sleepRecords: sleepRecords, selectedDate: $selectedDate)
                         .background(Color.white.opacity(0.9))
                         .cornerRadius(15)
+                        .shadow(radius: 10)
                         .padding()
 
                     if let selectedDate = selectedDate {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("Sleep Details for \(formattedDate(selectedDate))")
+                            Text(formattedDate(selectedDate))
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding(.horizontal)
+                                .padding(.top)
                             
                             if let recordsForSelectedDate = recordsForDate(selectedDate) {
                                 ForEach(recordsForSelectedDate) { record in
@@ -52,10 +54,19 @@ struct CalendarView: View {
                         .padding()
                     } else {
                         Text("Please select a date to view sleep records.")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white)
                     }
                 }
-                .navigationBarTitle("Calendar")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Calendar")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color.white)
+                            .padding(.top, 80)
+                    }
+                }
             }
         }
     }
@@ -173,15 +184,15 @@ struct CustomCalendarView: View {
         if let record = sleepRecords.first(where: { Calendar.current.isDate($0.date!, inSameDayAs: date) }) {
             switch record.quality {
             case 1:
-                return Color.red.opacity(0.3)
+                return Color.red.opacity(0.5)
             case 2:
-                return Color.orange.opacity(0.3)
+                return Color.orange.opacity(0.5)
             case 3:
-                return Color.yellow.opacity(0.3)
+                return Color.yellow.opacity(0.5)
             case 4:
-                return Color.blue.opacity(0.3)
+                return Color(red: 0.5, green: 0.75, blue: 0, opacity: 0.3)
             case 5:
-                return Color.green.opacity(0.3)
+                return Color.green.opacity(0.5)
             default:
                 return Color.clear
             }
@@ -207,7 +218,6 @@ struct SleepRecordDetailView: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding()
-        .background(Color.black.opacity(0.3))
         .cornerRadius(10)
     }
 }
