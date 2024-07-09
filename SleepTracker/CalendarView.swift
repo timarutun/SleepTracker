@@ -82,6 +82,7 @@ struct CalendarView: View {
     }
 }
 
+
 struct CustomCalendarView: View {
     let sleepRecords: FetchedResults<SleepRecord>
     @Binding var selectedDate: Date?
@@ -207,7 +208,15 @@ struct SleepRecordDetailView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            Text("Total Sleep Duration: \(sleepDuration(record))")
+                .font(.headline)
+                .foregroundColor(.yellow)
             
+            Text("Sleep Time: \(formattedTime(record.sleepTime!))")
+                .foregroundColor(.white)
+            
+            Text("Wake Time: \(formattedTime(record.wakeTime!))")
+                .foregroundColor(.white)
             
             Text("Quality: \(qualityEmojis[Int(record.quality) - 1])")
                 .foregroundColor(.white)
@@ -220,7 +229,32 @@ struct SleepRecordDetailView: View {
         .padding()
         .cornerRadius(10)
     }
+    
+    private func formattedTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+    
+    private func sleepDuration(_ record: SleepRecord) -> String {
+        let calendar = Calendar.current
+        let startTime = calendar.date(bySettingHour: 23, minute: 0, second: 0, of: record.sleepTime!)!
+        _ = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: record.wakeTime!.addingTimeInterval(86400))!
+        
+        let adjustedSleepTime = record.sleepTime! < startTime ? record.sleepTime!.addingTimeInterval(86400) : record.sleepTime!
+        let adjustedWakeTime = record.wakeTime! < startTime ? record.wakeTime!.addingTimeInterval(86400) : record.wakeTime!
+        
+        let sleepDuration = adjustedWakeTime.timeIntervalSince(adjustedSleepTime)
+        
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .short
+        
+        return formatter.string(from: sleepDuration) ?? "0h 0m"
+    }
 }
+
+
 
 struct CalendarView_Previews: PreviewProvider {
     static var previews: some View {
