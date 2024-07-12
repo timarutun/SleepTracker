@@ -64,7 +64,7 @@ struct CalendarView: View {
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundStyle(Color.white)
-                            .padding(.top, 80)
+                            .padding(.top, 60)
                     }
                 }
             }

@@ -22,6 +22,7 @@ struct SleepTrackerView: View {
     @State private var notes: String = ""
     @State private var showingDetailsFor: SleepRecord? = nil
     @State private var isShowingAddNewRecord = false
+    @State private var isEditingRecord = false
     
     private let qualityEmojis = ["😡", "😠", "🙂", "😀", "😍"]
     
@@ -45,9 +46,7 @@ struct SleepTrackerView: View {
                     Text("Calendar")
                 }
         }
-        .modifier(TabBarModifier())
     }
-
     
     var mainView: some View {
         NavigationView {
@@ -90,12 +89,22 @@ struct SleepTrackerView: View {
                                 }
                             }
                             .background(Color.clear)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    deleteSleepRecord(record: record)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button(action: {
+                                    startEditing(record: record)
+                                }) {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                         }
-                        .onDelete(perform: deleteSleepRecords)
                     }
                     .listStyle(PlainListStyle())
-                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .edgesIgnoringSafeArea(.all))
                 }
                 .toolbar {
                     ToolbarItem(placement: .principal) {
@@ -115,13 +124,13 @@ struct SleepTrackerView: View {
                 .modifier(NavigationBarModifier())
                 .overlay(
                     Group {
-                        if isShowingAddNewRecord {
+                        if isShowingAddNewRecord || isEditingRecord {
                             Color.black.opacity(0.5)
                                 .edgesIgnoringSafeArea(.all)
                             
                             VStack {
                                 Form {
-                                    Section(header: Text("Add New Sleep Record").foregroundColor(.gray)) {
+                                    Section(header: Text(isEditingRecord ? "Edit Sleep Record" : "Add New Sleep Record").foregroundColor(.gray)) {
                                         DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
                                             .foregroundColor(.black)
                                             .padding(.vertical, 4)
@@ -136,7 +145,6 @@ struct SleepTrackerView: View {
                                             ForEach(0..<5, id: \.self) { i in
                                                 Button(action: {
                                                     self.quality = i + 1
-                                                    print("q = \(quality), i = \(i)")
                                                 }) {
                                                     Text(qualityEmojis[i])
                                                         .font(.largeTitle)
@@ -148,11 +156,9 @@ struct SleepTrackerView: View {
                                                 .buttonStyle(PlainButtonStyle())
                                             }
                                         }
-                        
                                         
                                         TextField("Notes", text: $notes)
                                             .foregroundColor(.black)
-                                        
                                     }
                                 }
                                 .frame(width: 300, height: 380)
@@ -162,7 +168,13 @@ struct SleepTrackerView: View {
                                 
                                 HStack(alignment: .center) {
                                     Button(action: {
-                                        addSleepRecord()
+                                        if isEditingRecord {
+                                            updateSleepRecord(record: showingDetailsFor!)
+                                            isEditingRecord = false
+                                            showingDetailsFor = nil
+                                        } else {
+                                            addSleepRecord()
+                                        }
                                         isShowingAddNewRecord = false
                                     }) {
                                         Text("Save Record")
@@ -173,9 +185,9 @@ struct SleepTrackerView: View {
                                             .cornerRadius(10)
                                     }
                                     
-                                    
                                     Button(action: {
                                         isShowingAddNewRecord = false
+                                        isEditingRecord = false
                                     }) {
                                         Text("Close")
                                             .font(.callout)
@@ -234,9 +246,37 @@ struct SleepTrackerView: View {
         }
     }
     
-    private func deleteSleepRecords(offsets: IndexSet) {
+    private func updateSleepRecord(record: SleepRecord) {
         withAnimation {
-            offsets.map { sleepRecords[$0] }.forEach(viewContext.delete)
+            record.date = selectedDate
+            record.sleepTime = sleepTime
+            record.wakeTime = wakeTime
+            record.quality = Int16(quality)
+            record.notes = notes
+            
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    
+    private func startEditing(record: SleepRecord) {
+        selectedDate = record.date!
+        sleepTime = record.sleepTime!
+        wakeTime = record.wakeTime!
+        quality = Int(record.quality)
+        notes = record.notes ?? ""
+        showingDetailsFor = record
+        isEditingRecord = true
+        isShowingAddNewRecord = true
+    }
+    
+    private func deleteSleepRecord(record: SleepRecord) {
+        withAnimation {
+            viewContext.delete(record)
             
             do {
                 try viewContext.save()
@@ -247,7 +287,6 @@ struct SleepTrackerView: View {
         }
     }
 }
-
 
 struct NavigationBarModifier: ViewModifier {
     
@@ -265,38 +304,6 @@ struct NavigationBarModifier: ViewModifier {
         content
     }
 }
-
-struct TabBarModifier: ViewModifier {
-    
-    init() {
-        let appearance = UITabBarAppearance()
-        
-
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.purple
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.purple]
-        
-
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.gray
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.gray]
-        
-
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-        
-
-        UITabBar.appearance().isTranslucent = true
-        
-
-        UITabBar.appearance().backgroundImage = UIImage()
-    }
-    
-    func body(content: Content) -> some View {
-        content
-    }
-}
-
-
-
 
 struct SleepTrackerView_Previews: PreviewProvider {
     static var previews: some View {
