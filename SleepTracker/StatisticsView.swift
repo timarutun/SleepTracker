@@ -80,7 +80,7 @@ struct StatisticsView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                             if !filteredRecords.isEmpty {
-                                Text("Optimal Sleep Duration:")
+                                Text("Your Optimal Sleep Duration:")
                                     .font(.headline)
                                     .foregroundColor(.white)
                             }

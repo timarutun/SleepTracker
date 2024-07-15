@@ -60,11 +60,13 @@ struct CalendarView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
-                        Text("Calendar")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(Color.white)
-                            .padding(.top, 60)
+                        if selectedDate == nil {
+                            Text("Calendar")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color.white)
+                                .padding(.top, 60)
+                        }
                     }
                 }
             }
@@ -81,6 +83,7 @@ struct CalendarView: View {
         return sleepRecords.filter { Calendar.current.isDate($0.date!, inSameDayAs: date) }
     }
 }
+
 
 
 struct CustomCalendarView: View {
