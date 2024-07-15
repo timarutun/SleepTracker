@@ -216,7 +216,7 @@ struct SleepTrackerView: View {
                     .font(.callout)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.blue)
+                    .background(Gradient(colors: [.purple, .blue]))
                     .cornerRadius(10)
             }
             
@@ -227,7 +227,7 @@ struct SleepTrackerView: View {
                     .font(.callout)
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.red)
+                    .background(Gradient(colors: [.orange, .red]))
                     .cornerRadius(10)
             }
         }
