@@ -46,8 +46,16 @@ struct SleepTrackerView: View {
                     Image(systemName: "calendar")
                     Text("Calendar")
                 }
+            
+            
+            DailyTipsView()
+                .tabItem {
+                    Image(systemName: "lightbulb.fill")
+                    Text("Daily Tip")
+                }
         }
     }
+
     
     private var mainView: some View {
         NavigationView {
