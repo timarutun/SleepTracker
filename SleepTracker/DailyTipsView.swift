@@ -10,16 +10,29 @@ import SwiftUI
 struct DailyTipsView: View {
     var body: some View {
         NavigationView {
-            VStack {
-                DailyTipCardView()
-                    .padding()
-                Spacer()
+            ZStack {
+
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    DailyTipCardView()
+                        .padding()
+                    Spacer()
+                }
+                .padding(.top,100)
             }
             .navigationTitle("Daily Tip")
         }
     }
 }
 
+struct DailyTipsView_Previews: PreviewProvider {
+    static var previews: some View {
+        DailyTipsView()
+    }
+}
 
 #Preview {
     DailyTipsView()
