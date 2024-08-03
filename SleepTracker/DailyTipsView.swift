@@ -17,6 +17,9 @@ struct DailyTipsView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
+                    Text("Tap to see your Daily Tip")
+                        .font(.title2)
+                        .bold()
                     DailyTipCardView()
                         .padding()
                     Spacer()

@@ -37,11 +37,12 @@ struct DailyTipCardView: View {
                         axis: (x: 0, y: 1, z: 0)
                     )
             } else {
-                Image("flipImage")
+                Image(systemName: "heart.circle.fill")
+                    .renderingMode(.original)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 330, height: 200)
-                    .background(Color.gray)
+//                    .background(Color.gray)
                     .cornerRadius(10)
                     .shadow(radius: 5)
                     .onTapGesture {
