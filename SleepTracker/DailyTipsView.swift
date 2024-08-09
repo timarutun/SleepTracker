@@ -18,6 +18,7 @@ struct DailyTipsView: View {
                 
                 VStack {
                     Text("Tap to see your Daily Tip")
+                        .foregroundStyle(Color.white)
                         .font(.title2)
                         .bold()
                     DailyTipCardView()
