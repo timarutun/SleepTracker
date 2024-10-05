@@ -42,7 +42,6 @@ struct DailyTipCardView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 330, height: 200)
-//                    .background(Color.gray)
                     .cornerRadius(10)
                     .shadow(radius: 5)
                     .onTapGesture {

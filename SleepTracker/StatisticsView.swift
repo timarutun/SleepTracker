@@ -182,17 +182,6 @@ struct SleepSatisfactionChart: View {
                 .bold()
         }
     }
-    
-//    private var satisfactionColor: Color {
-//        switch satisfaction {
-//        case 80...100:
-//            return .green
-//        case 60..<80:
-//            return .yellow
-//        default:
-//            return .red
-//        }
-//    }
 }
 
 struct StatisticsView_Previews: PreviewProvider {
