@@ -25,6 +25,9 @@ struct SleepTrackerView: View {
     @State private var isShowingAddNewRecord = false
     @State private var isEditingRecord = false
     
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+    @AppStorage("customNotificationTime") private var customNotificationTimeString: String = "" // Store as String
+    
     private let qualityEmojis = ["😡", "😠", "🙂", "😀", "😍"]
     
     var body: some View {
@@ -47,15 +50,13 @@ struct SleepTrackerView: View {
                     Text("Calendar")
                 }
             
-            
-            DailyTipsView()
+            NotificationsView()
                 .tabItem {
-                    Image(systemName: "lightbulb.fill")
-                    Text("Daily Tip")
+                    Image(systemName: "bell.fill")
+                    Text("Notifications")
                 }
         }
     }
-
     
     private var mainView: some View {
         NavigationView {
@@ -258,6 +259,13 @@ struct SleepTrackerView: View {
             addSleepRecord()
         }
         isShowingAddNewRecord = false
+        
+        // If notifications are enabled and a custom time is set, schedule the notification
+        if notificationsEnabled {
+            if let customTime = getCustomNotificationTime() {
+                SleepMateNotifications.scheduleSleepNotification(at: customTime)
+            }
+        }
     }
 
     private func closeForm() {
@@ -320,18 +328,7 @@ struct SleepTrackerView: View {
             }
         }
     }
-    
-    private func startEditing(record: SleepRecord) {
-        selectedDate = record.date!
-        sleepTime = record.sleepTime!
-        wakeTime = record.wakeTime!
-        quality = Int(record.quality)
-        notes = record.notes ?? ""
-        showingDetailsFor = record
-        isEditingRecord = true
-        isShowingAddNewRecord = true
-    }
-    
+
     private func deleteSleepRecord(record: SleepRecord) {
         withAnimation {
             viewContext.delete(record)
@@ -344,27 +341,30 @@ struct SleepTrackerView: View {
             }
         }
     }
+    
+    private func startEditing(record: SleepRecord) {
+        isEditingRecord = true
+        showingDetailsFor = record
+        sleepTime = record.sleepTime!
+        wakeTime = record.wakeTime!
+        quality = Int(record.quality)
+        notes = record.notes ?? ""
+    }
+    
+    private func getCustomNotificationTime() -> Date? {
+        // Convert the stored custom notification time string back to a Date object
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return formatter.date(from: customNotificationTimeString)
+    }
 }
 
 struct NavigationBarModifier: ViewModifier {
-    init() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-    }
-    
     func body(content: Content) -> some View {
         content
-    }
-}
-
-struct SleepTrackerView_Previews: PreviewProvider {
-    static var previews: some View {
-        SleepTrackerView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            .padding(.top, 80)
+            .padding(.bottom, 8)
+            .background(Color.clear)
     }
 }
 

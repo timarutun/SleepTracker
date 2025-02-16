@@ -18,10 +18,9 @@
 		39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599F052C23DC8D0050DC0E /* SleepBarView.swift */; };
 		399868D22C4E23DA008E9FCF /* SleepTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399868D12C4E23DA008E9FCF /* SleepTrackerTests.swift */; };
 		399868D92C4E2431008E9FCF /* SleepTrackerCoreDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399868D82C4E2431008E9FCF /* SleepTrackerCoreDataTests.swift */; };
-		39CB36732D5F05300090C9BA /* SleepMateNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CB36722D5F05300090C9BA /* SleepMateNotifications.swift */; };
+		39CB36752D5F06B40090C9BA /* SleepMateNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CB36742D5F06B40090C9BA /* SleepMateNotifications.swift */; };
+		39CB36772D5F07A20090C9BA /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CB36762D5F07A20090C9BA /* NotificationsView.swift */; };
 		39CCBFD02C2FD604004C65DB /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */; };
-		39ED71492C5361220030F5F4 /* DailyTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39ED71482C5361220030F5F4 /* DailyTipsView.swift */; };
-		39ED714B2C5362510030F5F4 /* DailyTipCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39ED714A2C5362510030F5F4 /* DailyTipCardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,10 +47,9 @@
 		399868CF2C4E23DA008E9FCF /* SleepTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SleepTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		399868D12C4E23DA008E9FCF /* SleepTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTrackerTests.swift; sourceTree = "<group>"; };
 		399868D82C4E2431008E9FCF /* SleepTrackerCoreDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTrackerCoreDataTests.swift; sourceTree = "<group>"; };
-		39CB36722D5F05300090C9BA /* SleepMateNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepMateNotifications.swift; sourceTree = "<group>"; };
+		39CB36742D5F06B40090C9BA /* SleepMateNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepMateNotifications.swift; sourceTree = "<group>"; };
+		39CB36762D5F07A20090C9BA /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
-		39ED71482C5361220030F5F4 /* DailyTipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTipsView.swift; sourceTree = "<group>"; };
-		39ED714A2C5362510030F5F4 /* DailyTipCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTipCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,11 +93,10 @@
 			children = (
 				39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */,
 				39599EF22C23D8570050DC0E /* SleepTrackerView.swift */,
+				39CB36762D5F07A20090C9BA /* NotificationsView.swift */,
+				39CB36742D5F06B40090C9BA /* SleepMateNotifications.swift */,
 				3921A87A2C39D99C00E58312 /* CalendarView.swift */,
 				39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */,
-				39ED71482C5361220030F5F4 /* DailyTipsView.swift */,
-				39CB36722D5F05300090C9BA /* SleepMateNotifications.swift */,
-				39ED714A2C5362510030F5F4 /* DailyTipCardView.swift */,
 				39599EF42C23D8590050DC0E /* Assets.xcassets */,
 				39599EF92C23D8590050DC0E /* Persistence.swift */,
 				39599F052C23DC8D0050DC0E /* SleepBarView.swift */,
@@ -227,16 +224,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39ED714B2C5362510030F5F4 /* DailyTipCardView.swift in Sources */,
 				39599F062C23DC8D0050DC0E /* SleepBarView.swift in Sources */,
 				3921A87B2C39D99C00E58312 /* CalendarView.swift in Sources */,
 				39CCBFD02C2FD604004C65DB /* StatisticsView.swift in Sources */,
 				39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */,
-				39CB36732D5F05300090C9BA /* SleepMateNotifications.swift in Sources */,
+				39CB36752D5F06B40090C9BA /* SleepMateNotifications.swift in Sources */,
 				39599EF32C23D8570050DC0E /* SleepTrackerView.swift in Sources */,
-				39ED71492C5361220030F5F4 /* DailyTipsView.swift in Sources */,
 				39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */,
 				39599EF12C23D8570050DC0E /* SleepTrackerApp.swift in Sources */,
+				39CB36772D5F07A20090C9BA /* NotificationsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
