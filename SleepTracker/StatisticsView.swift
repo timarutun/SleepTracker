@@ -159,6 +159,19 @@ struct StatisticsView: View {
         // Calculate average sleep duration
         return totalWeight == 0 ? nil : totalDuration / totalWeight
     }
+    
+    private func recommendedSleepTime(for records: [SleepRecord]) -> Date? {
+        guard let optimalDuration = optimalSleepDuration(for: records) else { return nil }
+        
+        let wakeTimes = records.map { $0.wakeTime! }
+        guard !wakeTimes.isEmpty else { return nil }
+        
+        let averageWakeTimeInterval = wakeTimes.map { $0.timeIntervalSinceReferenceDate }.reduce(0, +) / Double(wakeTimes.count)
+        let averageWakeTime = Date(timeIntervalSinceReferenceDate: averageWakeTimeInterval)
+        
+        return averageWakeTime.addingTimeInterval(-optimalDuration)
+    }
+
 }
 
 struct SleepSatisfactionChart: View {
