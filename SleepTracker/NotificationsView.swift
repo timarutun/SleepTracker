@@ -16,14 +16,13 @@ struct NotificationsView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // Background gradient for a modern look
                 LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
                     .edgesIgnoringSafeArea(.all)
 
                 Form {
                     Section(header: Text("Notifications")
                         .font(.headline)
-                        .foregroundColor(.white)) {
+                        .foregroundColor(.secondary)) {
                             
                             Toggle(isOn: $notificationsEnabled) {
                                 Text("Enable Notifications")
@@ -34,7 +33,7 @@ struct NotificationsView: View {
 
                             if notificationsEnabled {
                                 VStack(alignment: .leading, spacing: 20) {
-                                    // DatePicker for selecting the notification time
+
                                     DatePicker("Notification Time", selection: $selectedNotificationTime, displayedComponents: .hourAndMinute)
                                         .datePickerStyle(WheelDatePickerStyle())
                                         .labelsHidden()
@@ -44,10 +43,9 @@ struct NotificationsView: View {
                                         .shadow(radius: 5)
                                         .padding(.horizontal)
 
-                                    // Text showing the calculated bedtime notification time
                                     Text("Calculated Bedtime Notification Time: \(formattedNotificationTime)")
                                         .font(.subheadline)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.accentColor)
                                         .padding(.top, 10)
                                 }
                                 .padding(.vertical)

@@ -26,7 +26,7 @@ struct SleepTrackerView: View {
     @State private var isEditingRecord = false
     
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
-    @AppStorage("customNotificationTime") private var customNotificationTimeString: String = "" // Store as String
+    @AppStorage("customNotificationTime") private var customNotificationTimeString: String = "" 
     
     private let qualityEmojis = ["😡", "😠", "🙂", "😀", "😍"]
     
