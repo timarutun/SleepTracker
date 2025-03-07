@@ -20,14 +20,11 @@ struct NotificationsView: View {
                     .edgesIgnoringSafeArea(.all)
 
                 Form {
-                    Section(header: Text("Notifications")
-                        .font(.headline)
-                        .foregroundColor(.secondary)) {
+                    Section() {
                             
                             Toggle(isOn: $notificationsEnabled) {
                                 Text("Enable Notifications")
-                                    .font(.title2)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                             }
                             .padding(.horizontal)
 
@@ -43,10 +40,10 @@ struct NotificationsView: View {
                                         .shadow(radius: 5)
                                         .padding(.horizontal)
 
-                                    Text("Calculated Bedtime Notification Time: \(formattedNotificationTime)")
+                                    Text("Calculated best Bedtime: \(formattedNotificationTime)")
                                         .font(.subheadline)
-                                        .foregroundColor(.accentColor)
-                                        .padding(.top, 10)
+                                        .foregroundColor(.secondary)
+                                        .padding()
                                 }
                                 .padding(.vertical)
                             }
