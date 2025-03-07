@@ -20,13 +20,13 @@ struct NotificationsView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 Form {
-                    Section {
+                    Section() {
                         Toggle("Enable Notifications", isOn: $notificationsEnabled)
                             .foregroundColor(.primary)
                             .padding(.horizontal)
                         
                         if notificationsEnabled {
-                            VStack(alignment: .leading, spacing: 20) {
+                            VStack(alignment: .center, spacing: 20) {
                                 Button(action: {
                                     selectedNotificationTime = loadNotificationTime()
                                 }) {
@@ -55,8 +55,8 @@ struct NotificationsView: View {
                                         .font(.headline)
                                         .foregroundColor(.white)
                                         .padding()
-                                        .frame(maxWidth: .infinity)
-                                        .background(Color.blue)
+                                        .frame(maxWidth: 150)
+                                        .background(Gradient(colors: [.blue.opacity(0.8), .purple.opacity(0.8)]))
                                         .cornerRadius(10)
                                         .shadow(radius: 5)
                                 }
