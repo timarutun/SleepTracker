@@ -6,134 +6,222 @@
 //
 
 import SwiftUI
-import UserNotifications
 
 struct NotificationsView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \SleepRecord.date, ascending: false)],
+        animation: .default)
+    private var sleepRecords: FetchedResults<SleepRecord>
     
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     @AppStorage("customNotificationTime") private var customNotificationTimeString: String = ""
     
     @State private var selectedNotificationTime: Date = Date()
-    @State private var isTimeManuallyUpdated: Bool = false
-    @State private var bestBedtime: Date = Date()
-
+    @State private var showTimePicker: Bool = false
+    
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                Form {
-                    Section {
+        NavigationView {
+            ZStack {
+                // Gradient background
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .edgesIgnoringSafeArea(.all)
+                
+                // Main content
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Notifications toggle
                         Toggle("Enable Notifications", isOn: $notificationsEnabled)
-                            .foregroundColor(.primary)
+                            .padding()
+                            .background(Color.white.opacity(0.2))
+                            .cornerRadius(10)
                             .padding(.horizontal)
-                            .onChange(of: notificationsEnabled) { _ in
-                                updateNotifications()
+                            .onChange(of: notificationsEnabled) { enabled in
+                                if enabled {
+                                    scheduleCustomNotification(at: selectedNotificationTime)
+                                } else {
+                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                }
                             }
                         
+                        // Current and recommended time in a horizontal stack
                         if notificationsEnabled {
-                            VStack(alignment: .center, spacing: 20) {
-                                Button(action: {
-                                    if let bedtime = SleepMateNotifications.calculateBestBedtime(using: viewContext) {
-                                        bestBedtime = bedtime
-                                    }
-                                }) {
-                                    Text("Calculated best Bedtime: \(formatTime(bestBedtime))")
-                                        .font(.subheadline)
-                                        .foregroundColor(.blue)
-                                }
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(10)
-                                .shadow(radius: 5)
+                            HStack(spacing: 16) {
+                                // Current notification time
+                                TimeCard(
+                                    title: "Current Time",
+                                    time: formattedTime(selectedNotificationTime),
+                                    icon: "bell.fill",
+                                    description: "Your reminder time",
+                                    color: .yellow
+                                )
                                 
-                                DatePicker("Notification Time", selection: $selectedNotificationTime, displayedComponents: .hourAndMinute)
+                                // Recommended bedtime
+                                TimeCard(
+                                    title: "Recommended",
+                                    time: formattedTime(recommendedBedtime),
+                                    icon: "bed.double.fill",
+                                    description: "Based on your best sleep",
+                                    color: .green
+                                )
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        // Button to set custom bedtime
+                        if notificationsEnabled {
+                            Button(action: {
+                                showTimePicker.toggle()
+                            }) {
+                                Text("Set Custom Bedtime")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.blue.opacity(0.6))
+                                    .cornerRadius(10)
+                                    .shadow(color: .blue.opacity(0.4), radius: 5, x: 0, y: 3)
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        // Show time picker if enabled
+                        if showTimePicker {
+                            VStack(spacing: 8) {
+                                DatePicker("Select Bedtime", selection: $selectedNotificationTime, displayedComponents: .hourAndMinute)
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .labelsHidden()
-                                    .frame(height: 150)
-                                    .background(Color.white)
+                                    .padding()
+                                    .background(Color.white.opacity(0.2))
                                     .cornerRadius(10)
-                                    .shadow(radius: 5)
                                     .padding(.horizontal)
-                                    .onChange(of: selectedNotificationTime) { _ in
-                                        isTimeManuallyUpdated = true
-                                    }
+                                
+                                Button(action: {
+                                    saveCustomNotificationTime()
+                                    showTimePicker = false
+                                }) {
+                                    Text("Save Custom Time")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.green.opacity(0.6))
+                                        .cornerRadius(10)
+                                        .shadow(color: .green.opacity(0.4), radius: 5, x: 0, y: 3)
+                                }
+                                .padding(.horizontal)
                             }
-                            .padding(.vertical)
+                            .transition(.opacity)
                         }
                     }
-                }
-                .padding(.top)
-                .background(Color.white.opacity(0.9))
-                .cornerRadius(20)
-                .shadow(radius: 10)
-                
-                if notificationsEnabled {
-                    Button(action: {
-                        saveNotificationTime()
-                    }) {
-                        Text("Save")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: 200)
-                            .background(LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.8), .purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))
-                            .cornerRadius(10)
-                            .shadow(radius: 5)
-                    }
-                    .padding(.top)
+                    .padding(.vertical, 20)
                 }
             }
-        }
-        .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            if !isTimeManuallyUpdated {
+            .navigationTitle("Notifications")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
                 selectedNotificationTime = loadNotificationTime()
             }
-            if let bedtime = SleepMateNotifications.calculateBestBedtime(using: viewContext) {
-                bestBedtime = bedtime
-            }
         }
     }
     
-    private func saveNotificationTime() {
-        customNotificationTimeString = formatDate(selectedNotificationTime)
-        updateNotifications()
+    // Calculate recommended bedtime based on high-quality sleep records
+    private var recommendedBedtime: Date {
+        let bestRecords = sleepRecords.filter { $0.quality >= 4 } // Filter records with quality 4 or higher
+        guard !bestRecords.isEmpty else { return Date() } // Default to current time if no records
+        
+        // Calculate average bedtime
+        let totalSeconds = bestRecords.reduce(0) { result, record in
+            let sleepTime = record.sleepTime!
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.hour, .minute], from: sleepTime)
+            let seconds = (components.hour! * 3600) + (components.minute! * 60)
+            return result + seconds
+        }
+        
+        let averageSeconds = totalSeconds / bestRecords.count
+        let hours = averageSeconds / 3600
+        let minutes = (averageSeconds % 3600) / 60
+        
+        let calendar = Calendar.current
+        return calendar.date(bySettingHour: hours, minute: minutes, second: 0, of: Date()) ?? Date()
     }
     
+    // Save custom notification time to AppStorage
+    private func saveCustomNotificationTime() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        customNotificationTimeString = formatter.string(from: selectedNotificationTime)
+        scheduleCustomNotification(at: selectedNotificationTime)
+    }
+    
+    // Load saved notification time or use recommended bedtime
     private func loadNotificationTime() -> Date {
         if customNotificationTimeString.isEmpty {
-            return Date()
+            return recommendedBedtime // Use recommended time if no custom time is set
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return formatter.date(from: customNotificationTimeString) ?? Date()
+        return formatter.date(from: customNotificationTimeString) ?? recommendedBedtime
     }
     
-    private func formatDate(_ date: Date) -> String {
+    // Format time for display
+    private func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.timeStyle = .short
         return formatter.string(from: date)
     }
     
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "hh:mm a"
-        return formatter.string(from: date)
-    }
-    
-    private func updateNotifications() {
+    // Schedule notification at the specified time
+    private func scheduleCustomNotification(at time: Date) {
         if notificationsEnabled {
-            SleepMateNotifications.scheduleSleepNotification(at: selectedNotificationTime)
-        } else {
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["sleepReminder"])
+            SleepMateNotifications.scheduleSleepNotification(at: time)
         }
     }
 }
 
+// Custom Time Card View
+struct TimeCard: View {
+    let title: String
+    let time: String
+    let icon: String
+    let description: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(color)
+                    .font(.system(size: 16))
+                Text(title)
+                    .font(.headline)
+                    .fontWidth(.condensed)
+                    .foregroundColor(.white)
+            }
+            
+            Text(time)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundColor(color)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(10)
+                .shadow(color: color.opacity(0.4), radius: 5, x: 0, y: 3)
+            
+            Text(description)
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.8))
+        }
+        .padding()
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(15)
+        .shadow(radius: 5)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// Preview
 struct NotificationsView_Previews: PreviewProvider {
     static var previews: some View {
         NotificationsView()
