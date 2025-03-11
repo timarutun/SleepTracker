@@ -160,7 +160,7 @@ struct StatisticsView: View {
         return totalWeight == 0 ? nil : totalDuration / totalWeight
     }
     
-    private func recommendedSleepTime(for records: [SleepRecord]) -> Date? {
+    func recommendedSleepTime(for records: [SleepRecord]) -> Date? {
         guard let optimalDuration = optimalSleepDuration(for: records) else { return nil }
         
         let wakeTimes = records.map { $0.wakeTime! }
