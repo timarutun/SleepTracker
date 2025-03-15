@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct NotificationsView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -41,6 +42,7 @@ struct NotificationsView: View {
                                     scheduleCustomNotification(at: selectedNotificationTime)
                                 } else {
                                     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                    print("All notifications canceled")
                                 }
                             }
                         
@@ -120,17 +122,29 @@ struct NotificationsView: View {
             .navigationTitle("Notifications")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
+                // Request notification permission on first launch
+                requestNotificationPermission()
                 selectedNotificationTime = loadNotificationTime()
             }
         }
     }
     
-    // Calculate recommended bedtime based on high-quality sleep records
+    // Request notification permission
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if granted {
+                print("Notification permission granted")
+            } else if let error = error {
+                print("Error requesting notification permission: \(error)")
+            }
+        }
+    }
+    
+    // Calculate recommended bedtime
     private var recommendedBedtime: Date {
         let bestRecords = sleepRecords.filter { $0.quality >= 4 } // Filter records with quality 4 or higher
-        guard !bestRecords.isEmpty else { return Date() } // Default to current time if no records
+        guard !bestRecords.isEmpty else { return Date() } // Default to current time
         
-        // Calculate average bedtime
         let totalSeconds = bestRecords.reduce(0) { result, record in
             let sleepTime = record.sleepTime!
             let calendar = Calendar.current
@@ -147,7 +161,7 @@ struct NotificationsView: View {
         return calendar.date(bySettingHour: hours, minute: minutes, second: 0, of: Date()) ?? Date()
     }
     
-    // Save custom notification time to AppStorage
+    // Save custom notification time
     private func saveCustomNotificationTime() {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -155,10 +169,10 @@ struct NotificationsView: View {
         scheduleCustomNotification(at: selectedNotificationTime)
     }
     
-    // Load saved notification time or use recommended bedtime
+    // Load saved notification time
     private func loadNotificationTime() -> Date {
         if customNotificationTimeString.isEmpty {
-            return recommendedBedtime // Use recommended time if no custom time is set
+            return recommendedBedtime
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -172,7 +186,7 @@ struct NotificationsView: View {
         return formatter.string(from: date)
     }
     
-    // Schedule notification at the specified time
+    // Schedule notification
     private func scheduleCustomNotification(at time: Date) {
         if notificationsEnabled {
             SleepMateNotifications.scheduleSleepNotification(at: time)
@@ -180,7 +194,7 @@ struct NotificationsView: View {
     }
 }
 
-// Custom Time Card View
+// Time Card View
 struct TimeCard: View {
     let title: String
     let time: String

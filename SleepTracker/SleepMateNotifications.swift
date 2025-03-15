@@ -14,7 +14,14 @@ struct SleepMateNotifications {
         content.body = "It's time to go to bed!"
         content.sound = .default
 
-        let triggerDate = Calendar.current.dateComponents([.year,.month,.day,.hour,.minute], from: bedtime)
+        // Ensure the notification time is not in the past
+        let currentDate = Date()
+        if bedtime <= currentDate {
+            print("Notification time is in the past. Notification will not be scheduled.")
+            return
+        }
+
+        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: bedtime)
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         
         let request = UNNotificationRequest(identifier: "sleepReminder", content: content, trigger: trigger)
@@ -22,6 +29,8 @@ struct SleepMateNotifications {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error scheduling notification: \(error)")
+            } else {
+                print("Notification successfully scheduled for \(bedtime)")
             }
         }
     }
