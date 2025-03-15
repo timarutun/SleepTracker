@@ -7,6 +7,8 @@
 
 import UserNotifications
 
+import UserNotifications
+
 struct SleepMateNotifications {
     static func scheduleSleepNotification(at bedtime: Date) {
         let content = UNMutableNotificationContent()
@@ -21,8 +23,12 @@ struct SleepMateNotifications {
             return
         }
 
-        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: bedtime)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        // Extract hour and minute from the selected time
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: bedtime)
+        
+        // Create a trigger that repeats daily
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
         
         let request = UNNotificationRequest(identifier: "sleepReminder", content: content, trigger: trigger)
         
@@ -30,7 +36,7 @@ struct SleepMateNotifications {
             if let error = error {
                 print("Error scheduling notification: \(error)")
             } else {
-                print("Notification successfully scheduled for \(bedtime)")
+                print("Notification successfully scheduled for daily at \(components.hour!):\(components.minute!)")
             }
         }
     }

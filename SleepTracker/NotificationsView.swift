@@ -124,6 +124,7 @@ struct NotificationsView: View {
             .onAppear {
                 // Request notification permission on first launch
                 requestNotificationPermission()
+                // Load and adjust the notification time to the future
                 selectedNotificationTime = loadNotificationTime()
             }
         }
@@ -165,18 +166,46 @@ struct NotificationsView: View {
     private func saveCustomNotificationTime() {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        customNotificationTimeString = formatter.string(from: selectedNotificationTime)
-        scheduleCustomNotification(at: selectedNotificationTime)
+        
+        // Adjust the selected time to the future before saving
+        let adjustedTime = adjustToFutureTime(selectedNotificationTime)
+        customNotificationTimeString = formatter.string(from: adjustedTime)
+        
+        // Schedule the notification
+        scheduleCustomNotification(at: adjustedTime)
     }
     
     // Load saved notification time
     private func loadNotificationTime() -> Date {
-        if customNotificationTimeString.isEmpty {
-            return recommendedBedtime
-        }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return formatter.date(from: customNotificationTimeString) ?? recommendedBedtime
+        
+        // Load saved time or use recommended bedtime
+        if let savedTime = formatter.date(from: customNotificationTimeString) {
+            // Adjust the time to the future if it's in the past
+            return adjustToFutureTime(savedTime)
+        } else {
+            return adjustToFutureTime(recommendedBedtime)
+        }
+    }
+    
+    // Adjust time to the future if it's in the past
+    private func adjustToFutureTime(_ time: Date) -> Date {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Extract hour and minute from the selected time
+        let components = calendar.dateComponents([.hour, .minute], from: time)
+        
+        // Create a new date with the same hour and minute, but today or tomorrow
+        var adjustedTime = calendar.date(bySettingHour: components.hour!, minute: components.minute!, second: 0, of: now)!
+        
+        // If the adjusted time is still in the past, add one day
+        if adjustedTime <= now {
+            adjustedTime = calendar.date(byAdding: .day, value: 1, to: adjustedTime)!
+        }
+        
+        return adjustedTime
     }
     
     // Format time for display
