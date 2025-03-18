@@ -362,7 +362,7 @@ struct SleepTrackerView: View {
 struct NavigationBarModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(.top, 80)
+            .padding(.top, 10)
             .padding(.bottom, 8)
             .background(Color.clear)
     }
