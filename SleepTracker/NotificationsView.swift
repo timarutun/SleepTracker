@@ -6,74 +6,53 @@
 //
 
 import SwiftUI
-import UserNotifications
 
 struct NotificationsView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \SleepRecord.date, ascending: false)],
-        animation: .default)
-    private var sleepRecords: FetchedResults<SleepRecord>
-    
-    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
-    @AppStorage("customNotificationTime") private var customNotificationTimeString: String = ""
-    
-    @State private var selectedNotificationTime: Date = Date()
-    @State private var showTimePicker: Bool = false
+    @StateObject private var viewModel = NotificationsViewModel()
     
     var body: some View {
         NavigationView {
             ZStack {
                 // Gradient background
-                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                               startPoint: .topLeading,
+                               endPoint: .bottomTrailing)
                     .edgesIgnoringSafeArea(.all)
                 
-                // Main content
                 ScrollView {
                     VStack(spacing: 16) {
                         // Notifications toggle
-                        Toggle("Enable Notifications", isOn: $notificationsEnabled)
+                        Toggle("Enable Notifications", isOn: $viewModel.notificationsEnabled)
                             .padding()
                             .background(Color.white.opacity(0.2))
                             .cornerRadius(10)
                             .padding(.horizontal)
-                            .onChange(of: notificationsEnabled) { enabled in
-                                if enabled {
-                                    scheduleCustomNotification(at: selectedNotificationTime)
-                                } else {
-                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-                                    print("All notifications canceled")
-                                }
+                            .onChange(of: viewModel.notificationsEnabled) { enabled in
+                                viewModel.toggleNotifications(enabled: enabled)
                             }
                         
-                        // Current and recommended time in a horizontal stack
-                        if notificationsEnabled {
+                        // Time cards
+                        if viewModel.notificationsEnabled {
                             HStack(spacing: 16) {
-                                // Current notification time
-                                TimeCard(
-                                    title: "Current Time",
-                                    time: formattedTime(selectedNotificationTime),
-                                    icon: "bell.fill",
-                                    description: "Your reminder time",
-                                    color: .yellow
-                                )
+                                TimeCard(title: "Current Time",
+                                         time: viewModel.formattedTime(viewModel.selectedNotificationTime),
+                                         icon: "bell.fill",
+                                         description: "Your reminder time",
+                                         color: .yellow)
                                 
-                                // Recommended bedtime
-                                TimeCard(
-                                    title: "Recommended",
-                                    time: formattedTime(recommendedBedtime),
-                                    icon: "bed.double.fill",
-                                    description: "Based on your best sleep",
-                                    color: .green
-                                )
+                                TimeCard(title: "Recommended",
+                                         time: viewModel.formattedTime(viewModel.recommendedBedtime),
+                                         icon: "bed.double.fill",
+                                         description: "Based on your best sleep",
+                                         color: .green)
                             }
                             .padding(.horizontal)
                         }
                         
-                        // Button to set custom bedtime
-                        if notificationsEnabled {
+                        // Set custom bedtime button
+                        if viewModel.notificationsEnabled {
                             Button(action: {
-                                showTimePicker.toggle()
+                                viewModel.showTimePicker.toggle()
                             }) {
                                 Text("Set Custom Bedtime")
                                     .font(.headline)
@@ -87,10 +66,10 @@ struct NotificationsView: View {
                             .padding(.horizontal)
                         }
                         
-                        // Show time picker if enabled
-                        if showTimePicker {
+                        // Time Picker
+                        if viewModel.showTimePicker {
                             VStack(spacing: 8) {
-                                DatePicker("Select Bedtime", selection: $selectedNotificationTime, displayedComponents: .hourAndMinute)
+                                DatePicker("Select Bedtime", selection: $viewModel.selectedNotificationTime, displayedComponents: .hourAndMinute)
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .labelsHidden()
                                     .padding()
@@ -99,8 +78,7 @@ struct NotificationsView: View {
                                     .padding(.horizontal)
                                 
                                 Button(action: {
-                                    saveCustomNotificationTime()
-                                    showTimePicker = false
+                                    viewModel.saveCustomNotificationTime()
                                 }) {
                                     Text("Save Custom Time")
                                         .font(.headline)
@@ -122,147 +100,12 @@ struct NotificationsView: View {
             .navigationTitle("Notifications")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                // Request notification permission on first launch
-                requestNotificationPermission()
-                // Load and adjust the notification time to the future
-                selectedNotificationTime = loadNotificationTime()
+                viewModel.onAppear()
             }
-        }
-    }
-    
-    // Request notification permission
-    private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if granted {
-                print("Notification permission granted")
-            } else if let error = error {
-                print("Error requesting notification permission: \(error)")
-            }
-        }
-    }
-    
-    // Calculate recommended bedtime
-    private var recommendedBedtime: Date {
-        let bestRecords = sleepRecords.filter { $0.quality >= 4 } // Filter records with quality 4 or higher
-        guard !bestRecords.isEmpty else { return Date() } // Default to current time
-        
-        let totalSeconds = bestRecords.reduce(0) { result, record in
-            let sleepTime = record.sleepTime!
-            let calendar = Calendar.current
-            let components = calendar.dateComponents([.hour, .minute], from: sleepTime)
-            let seconds = (components.hour! * 3600) + (components.minute! * 60)
-            return result + seconds
-        }
-        
-        let averageSeconds = totalSeconds / bestRecords.count
-        let hours = averageSeconds / 3600
-        let minutes = (averageSeconds % 3600) / 60
-        
-        let calendar = Calendar.current
-        return calendar.date(bySettingHour: hours, minute: minutes, second: 0, of: Date()) ?? Date()
-    }
-    
-    // Save custom notification time
-    private func saveCustomNotificationTime() {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        // Adjust the selected time to the future before saving
-        let adjustedTime = adjustToFutureTime(selectedNotificationTime)
-        customNotificationTimeString = formatter.string(from: adjustedTime)
-        
-        // Schedule the notification
-        scheduleCustomNotification(at: adjustedTime)
-    }
-    
-    // Load saved notification time
-    private func loadNotificationTime() -> Date {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        // Load saved time or use recommended bedtime
-        if let savedTime = formatter.date(from: customNotificationTimeString) {
-            // Adjust the time to the future if it's in the past
-            return adjustToFutureTime(savedTime)
-        } else {
-            return adjustToFutureTime(recommendedBedtime)
-        }
-    }
-    
-    // Adjust time to the future if it's in the past
-    private func adjustToFutureTime(_ time: Date) -> Date {
-        let calendar = Calendar.current
-        let now = Date()
-        
-        // Extract hour and minute from the selected time
-        let components = calendar.dateComponents([.hour, .minute], from: time)
-        
-        // Create a new date with the same hour and minute, but today or tomorrow
-        var adjustedTime = calendar.date(bySettingHour: components.hour!, minute: components.minute!, second: 0, of: now)!
-        
-        // If the adjusted time is still in the past, add one day
-        if adjustedTime <= now {
-            adjustedTime = calendar.date(byAdding: .day, value: 1, to: adjustedTime)!
-        }
-        
-        return adjustedTime
-    }
-    
-    // Format time for display
-    private func formattedTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-    
-    // Schedule notification
-    private func scheduleCustomNotification(at time: Date) {
-        if notificationsEnabled {
-            SleepMateNotifications.scheduleSleepNotification(at: time)
         }
     }
 }
 
-// Time Card View
-struct TimeCard: View {
-    let title: String
-    let time: String
-    let icon: String
-    let description: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                    .font(.system(size: 16))
-                Text(title)
-                    .font(.headline)
-                    .fontWidth(.condensed)
-                    .foregroundColor(.white)
-            }
-            
-            Text(time)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundColor(color)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 16)
-                .background(Color.black.opacity(0.3))
-                .cornerRadius(10)
-                .shadow(color: color.opacity(0.4), radius: 5, x: 0, y: 3)
-            
-            Text(description)
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.8))
-        }
-        .padding()
-        .background(Color.white.opacity(0.1))
-        .cornerRadius(15)
-        .shadow(radius: 5)
-        .frame(maxWidth: .infinity)
-    }
-}
 
 // Preview
 struct NotificationsView_Previews: PreviewProvider {

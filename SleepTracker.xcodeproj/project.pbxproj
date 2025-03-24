@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39046A2B2D910D7E00B88EDB /* NotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39046A2A2D910D7E00B88EDB /* NotificationsViewModel.swift */; };
+		39046A2D2D910ED200B88EDB /* TimeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39046A2C2D910ED200B88EDB /* TimeCard.swift */; };
 		3921A87B2C39D99C00E58312 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3921A87A2C39D99C00E58312 /* CalendarView.swift */; };
 		393391C32C4F03F7007A2658 /* StatisticsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 393391C22C4F03F7007A2658 /* StatisticsViewTests.swift */; };
 		39599EF12C23D8570050DC0E /* SleepTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */; };
@@ -34,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		39046A2A2D910D7E00B88EDB /* NotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewModel.swift; sourceTree = "<group>"; };
+		39046A2C2D910ED200B88EDB /* TimeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeCard.swift; sourceTree = "<group>"; };
 		3921A87A2C39D99C00E58312 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		393391C22C4F03F7007A2658 /* StatisticsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewTests.swift; sourceTree = "<group>"; };
 		39599EED2C23D8570050DC0E /* SleepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SleepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,6 +98,8 @@
 				39599EF02C23D8570050DC0E /* SleepTrackerApp.swift */,
 				39599EF22C23D8570050DC0E /* SleepTrackerView.swift */,
 				39CB36762D5F07A20090C9BA /* NotificationsView.swift */,
+				39046A2A2D910D7E00B88EDB /* NotificationsViewModel.swift */,
+				39046A2C2D910ED200B88EDB /* TimeCard.swift */,
 				39CB36742D5F06B40090C9BA /* SleepMateNotifications.swift */,
 				3921A87A2C39D99C00E58312 /* CalendarView.swift */,
 				39CCBFCF2C2FD604004C65DB /* StatisticsView.swift */,
@@ -229,9 +235,11 @@
 				39CCBFD02C2FD604004C65DB /* StatisticsView.swift in Sources */,
 				39599EFA2C23D8590050DC0E /* Persistence.swift in Sources */,
 				39CB36752D5F06B40090C9BA /* SleepMateNotifications.swift in Sources */,
+				39046A2B2D910D7E00B88EDB /* NotificationsViewModel.swift in Sources */,
 				39599EF32C23D8570050DC0E /* SleepTrackerView.swift in Sources */,
 				39599EFD2C23D8590050DC0E /* SleepTrackerModel.xcdatamodeld in Sources */,
 				39599EF12C23D8570050DC0E /* SleepTrackerApp.swift in Sources */,
+				39046A2D2D910ED200B88EDB /* TimeCard.swift in Sources */,
 				39CB36772D5F07A20090C9BA /* NotificationsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

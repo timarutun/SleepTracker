@@ -181,13 +181,13 @@ struct SleepTrackerView: View {
         Form {
             Section(header: Text(isEditingRecord ? "Edit Sleep Record" : "Add New Sleep Record").foregroundColor(.gray)) {
                 DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .padding(.vertical, 4)
                 DatePicker("Sleep Time", selection: $sleepTime, displayedComponents: .hourAndMinute)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .padding(.vertical, 4)
                 DatePicker("Wake Time", selection: $wakeTime, displayedComponents: .hourAndMinute)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .padding(.vertical, 4)
                 
                 HStack {
