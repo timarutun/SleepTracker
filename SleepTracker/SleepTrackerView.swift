@@ -50,6 +50,12 @@ struct SleepTrackerView: View {
                     Text("Calendar")
                 }
             
+            SleepModeView()
+                        .tabItem {
+                            Image(systemName: "moon.fill")
+                            Text("Sleep Mode")
+                        }
+            
             NotificationsView()
                 .tabItem {
                     Image(systemName: "bell.fill")
