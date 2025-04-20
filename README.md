@@ -19,6 +19,7 @@
 - CoreData
 - UserNotifications
 - MVVM architecture
+- Custom diagrams 
 
 ## Installation
 
