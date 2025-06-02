@@ -20,9 +20,3 @@
 - UserNotifications
 - MVVM architecture
 - Custom diagrams 
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/sleepmate.git
